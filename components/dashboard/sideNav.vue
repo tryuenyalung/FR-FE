@@ -5,8 +5,8 @@
 
             <!-- <img class="is-paddingless is-marginless" src="~/assets/images/logo.png" alt="" ><br><br>  -->
 
-            <figure class="avatar has-text-centered">
-                <img width="170" height="170"  :src="user_avatar" >
+            <figure :class="'avatar has-text-centered'">
+                <img :src=" this.$store.state.user_details.user.avatar" >
             </figure>
 
             <aside class="menu">
@@ -41,7 +41,6 @@
         //         this.$router.push('/')
         //     }
         // },
-    
 
         data(){
 
@@ -77,6 +76,8 @@
     }
 
     .avatar img {
+    width: 100% !important;
+    height: 11rem !important;
     padding: 5px;
     background: #fff;
     border-radius: 50%;
