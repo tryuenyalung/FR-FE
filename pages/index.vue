@@ -126,7 +126,11 @@
         }
 
         axios(config)
-           .then(res => this.$router.push('/dashboard'))
+           .then(res => {
+             this.$store.dispatch('user_details/STORE_USER_DETAILS', res.data)
+             console.log(this.$store.state.user_details.user)
+             this.$router.push('/dashboard')
+           })
            .catch(err => {
               // this.registrationLoader = false
               this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))

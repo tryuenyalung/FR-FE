@@ -6,7 +6,7 @@
             <!-- <img class="is-paddingless is-marginless" src="~/assets/images/logo.png" alt="" ><br><br>  -->
 
             <figure class="avatar has-text-centered">
-                <img width="170" height="170" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX1wxkk903walmmfnJ6fWCKKsugg2KY3qINNM9RvnY3cgTIJYJRg">
+                <img width="170" height="170"  :src="user_avatar" >
             </figure>
 
             <aside class="menu">
@@ -41,6 +41,15 @@
         //         this.$router.push('/')
         //     }
         // },
+    
+
+        data(){
+
+            return{
+                user_avatar :  localStorage.getItem('user.avatar')
+            }
+
+        },//data
  
 
         methods:{
