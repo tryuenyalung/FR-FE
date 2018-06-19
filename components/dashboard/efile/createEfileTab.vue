@@ -1,7 +1,155 @@
 <template>
     <div>
 
-        <section class="section ">
+        <div class="modal is-active" >
+            <div class="modal-background"/> 
+
+            <div class="modal-content">
+                <div class="box">
+                    <h4 class="subtitle is-4">List of Recipients</h4>
+
+
+                            <!--search input-->
+        <div class="field has-addons has-addons-centered">
+            <p class="control is-expanded">
+                <input v-model="imageSearchInput" class="input " type="text" placeholder="Search images...">
+            </p>
+            
+            <p class="control">
+                <span class="select">
+                
+                <!--checking by the value of the option-->
+                <select v-model="imageSearchBy">
+                    <option>ID</option>
+                    <option>Name</option>
+                    <option>Type</option>
+                </select>
+
+                </span>
+            </p>&nbsp;&nbsp;
+        
+            <p class="control">
+                <button class="button is-danger is-pulled-right fas fa-cloud-upload-alt"/>
+            </p>
+        </div>
+
+
+
+                    <table class="table is-table-scrollable is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+
+                        
+                        <tbody class="">
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr> 
+
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input class="yuen" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <input class="yuen is-danger" type="checkbox">
+                                </td>
+                                <td>Yuen Y Yalung</td>
+                                <td>yuen.yalung@tooltwist.com</td>
+                                <td>Department of Something</td>
+                                <td>Admin Aid 3</td>
+                            </tr>
+
+                        </tbody>
+
+                        <tfoot><br>
+                            <button class="button is-danger is-pulled-right">Send</button>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <section class="section">
             <TinyMce v-model="content" :init="tinymce"></TinyMce><br>
             <button @click="getValue" class="is-pulled-right button is-danger is-medium"><b>Create</b></button>
         </section>
@@ -54,4 +202,33 @@
 
 <style scoped>
 
+
+
+.is-table-scrollable{
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.is-table-scrollable tbody{
+  display:block;
+  width: 100%;
+  overflow: auto;
+  height: 400px;
+}
+
+
+.is-table-scrollable th, .is-table-scrollable td {
+  padding: 5px;
+  text-align: left;
+  width: 200px;
+}
+
+.yuen {
+    height: 30px;
+    width: 30px;
+}
+ 
+
+      
 </style>

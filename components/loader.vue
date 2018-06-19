@@ -4,7 +4,7 @@
         <div class="modal" :class="{'is-active' : isActive }" >
             <div class="modal-background"></div>
             <div class="modal-content">
-                <div id="cssSpiner">Loading...</div>
+                <div id="cssSpiner" />
             </div>
         </div>
 
