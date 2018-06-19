@@ -76,8 +76,8 @@
     }
 
     .avatar img {
-    width: 100% !important;
-    height: 11rem !important;
+    width: 170px !important;
+    height: 170px !important;
     padding: 5px;
     background: #fff;
     border-radius: 50%;

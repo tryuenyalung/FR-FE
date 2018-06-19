@@ -1,6 +1,7 @@
 <template>
   <div>
 
+    <loader :isActive="this.loginLoader" />
 
     <section class="hero has-background-white-ter is-fullheight">
       <div class="hero-body">
@@ -78,14 +79,20 @@
 <script>
   import axios from 'axios'
   import keys from '~/components/keys'
+  import loader from '~/components/loader'
 
   export default {
-
+    
+    components: {
+      loader
+    },
+    
     data(){
       return{
 
         username: '',
         password: '',
+        loginLoader: false,
 
       }//return
     },//data
@@ -116,6 +123,8 @@
 
       submitLoginForm(loginForm){
 
+        this.loginLoader = !this.loginLoader
+
         const config = {
           method: 'POST',
           url: `${keys.BASE_URL}/api/v1/users/login`,
@@ -133,6 +142,7 @@
            })
            .catch(err => {
               // this.registrationLoader = false
+              this.loginLoader = !this.loginLoader
               this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
             })
       }
