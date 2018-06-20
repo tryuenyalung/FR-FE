@@ -95,7 +95,7 @@ $turquoise: #26a69a;
   color: #ffffff;
   font-size: 90px;
   text-indent: -9999em;
-  overflow: hidden;
+  overflow: hidden !important;
   width: 1em;
   height: 1em;
   border-radius: 50%;

@@ -1,14 +1,16 @@
 <template>
-    <div>
+     
 
         <div class="modal" :class="{'is-active' : isActive }" >
             <div class="modal-background"></div>
-            <div class="modal-content">
-                <div id="cssSpiner" />
+            <div class="modal-content" style="overflow: hidden;">
+                <div id="cssSpiner" >
+
+                </div>
             </div>
         </div>
 
-    </div>
+  
 </template>
 
 <script>
