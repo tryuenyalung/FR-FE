@@ -84,14 +84,12 @@
         </div><!--modal-->
 
 
-        <!-- <div class="modal is-active" >
+        <div class="modal" :class="{'is-active' : this.submiteEfileLoader}" >
             <div class="modal-background"></div>
             <div class="modal-content" style="overflow: hidden;">
-                <div id="cssSpiner" >
-
-                </div>
+                <div id="cssSpiner" />
             </div>
-        </div> -->
+        </div>
 
         <section class="section">
             <TinyMce v-model="efileContent" :init="tinymce"></TinyMce><br>
@@ -104,6 +102,8 @@
 <script>
 
     import TinyMce from '@tinymce/tinymce-vue'
+    import axios from 'axios'
+    import keys from '~/components/keys.js'
 
     export default {
         
@@ -134,13 +134,29 @@
                    }
 
                 })
-            }//filteredUserList
+            },//filteredUserList
+
+            buildEfileForm(){
+                let body = {
+                        name: this.efileName,
+                        content: escape( this.efileContent ),
+                        recipient: this.recipientList,
+                        sender: {
+                            id : this.$store.state.user_details.user._id,
+                            name: `${this.$store.state.user_details.user.name.first_name} ${this.$store.state.user_details.user.name.middle_name} ${this.$store.state.user_details.user.name.last_name}`
+                        },
+                        private_doc: this.private_doc
+                    }
+
+                return JSON.stringify( body )
+            },
+
 
         },
 
         data(){
             return{
-                loading: true,
+                submiteEfileLoader: false,
                 userSearchInput : '',
                 userSearchBy : 'Name',
                 isRecipientModalActive: false,
@@ -483,6 +499,13 @@
                 }
             },
 
+            clearEfileVModel(){
+                this.efileName = null
+                this.efileContent = null
+                this.recipientList = []
+                this.private_doc = null
+            },
+
             validateEfileContent(){
                 console.log(this.efileContent);
                 (this.efileContent !== null) ? this.toggleRecipientModal()
@@ -493,29 +516,44 @@
                 this.isRecipientModalActive = !this.isRecipientModalActive
             },
 
+            toggleUserSubmitLoader(){
+                this.submiteEfileLoader = !this.submiteEfileLoader
+            },
+
             validateEfileBeforeSubmit(){
                 if(this.recipientList.length === 0 || this.private_doc === null){
                     this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','complete the form !') )
                 }else{
-
+                    this.toggleUserSubmitLoader()
+                    this.submitEfile()
                 }
             },
 
             submitEfile(){
+                  
+                 const config = {
+                    method: 'POST',
+                    url: `${keys.BASE_URL}/api/v1/efiles`,
+                    data:  this.buildEfileForm,
+                    headers: { 
+                        "Content-Type": "application/json"
+                    }
+                }
 
+                axios(config)
+                    .then(res => {
+                        this.clearEfileVModel()
+                        this.toggleUserSubmitLoader()
+                        this.toggleRecipientModal()
+                        this.$notify( this.showNotif('success', 'Success', 'fa-check-circle','Efile succesfully created.'));
+                    })
+                    .catch(err => {
+                        this.toggleUserSubmitLoader()
+                        this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+                    })
             },
             
-            buildEfileForm(){
-                return (
-                    {
-                        name: Joi.string().required(),
-                        content: Joi.string().required(),
-                        recipient: Joi.array().required(),
-                        sender: Joi.object().required(),
-                        private_doc: Joi.boolean().required() 
-                    }
-                )
-            }
+            
 
         }
     }
