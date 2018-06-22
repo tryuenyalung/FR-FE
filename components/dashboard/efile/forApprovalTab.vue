@@ -1,9 +1,9 @@
 <template>
     <div class="section">
 
+        <loader :isActive="this.isLoaderActive"/>
 
-
-<div class="modal" :class="{'is-active': this.updateModalState}">
+<!-- <div class="modal" :class="{'is-active': this.updateModalState}">
   <div @click="toggleUpdateModal" class="modal-background"/>
 
   <div class="modal-content">
@@ -39,65 +39,151 @@
       </div>
   </div>
 
-</div>
+</div> -->
 
 
-        <!--search input-->
-        <div class="field has-addons has-addons-centered">
-            <p class="control is-expanded">
-                <input v-model="imageSearchInput" class="input is-medium" type="text" placeholder="Search images...">
-            </p>
-            
-            <p class="control">
-                <span class="select is-medium">
-                
-                <!--checking by the value of the option-->
-                <select v-model="imageSearchBy">
-                    <option>ID</option>
-                    <option>Name</option>
-                    <option>Type</option>
-                </select>
+            <div class="modal" :class="{'is-active': this.isRejectModalActive}">
+                <div @click="toggleRejectModal" class="modal-background"/>
 
-                </span>
-            </p>&nbsp;&nbsp;
-        
-            <p class="control">
-                <button class="button is-danger is-pulled-right fas fa-cloud-upload-alt is-medium"/>
-            </p>
-        </div>
+                <div class="modal-content">
+                    <div class="box">
+                        <p class="has-text-centered subtitle is-4">
+                            Are you sure you want to reject this:
+                        </p>
 
+                        <div class="columns">
+                            <div class="column">
+                                <p class="subtitle is-6"> <b>Efile ID:</b> {{this.efileToBeRejectedDetails.id}}</p>
+                            </div>
+
+                            <div class="column">
+                                <p class="subtitle is-6"> <b>Efile Name:</b> {{this.efileToBeRejectedDetails.name}}</p>
+                            </div>
+
+                        </div>
+
+                        <div class="columns">
+                            <div class="column">
+                                <p class="label">Reason to Reject:</p>
+                                <textarea class="textarea" placeholder="Reason of Rejection" rows="10" />
+                            </div>
+                        </div>
+
+                        <div class="columns">
+                            <div class="column">
+                                <a :href="`dashboard/efile/view?id=${efileToBeRejectedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a>
+                            </div>
+
+                            <div class="column">
+                                <a :href="`dashboard/efile/view?id=${efileToBeRejectedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">Reject</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+       
         <!--table-->
         <div class="table-container">
             <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth ">
 
             <thead>
                 <tr  class="has-text-centered">
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Size</th>
+                    <th>Efile Name</th>
+                    <th>Sender</th>
+                    <th>Recipients</th>
+                    <th>Pending for Approval</th>
+                    <th>Approved Recipients</th>
+                    <th>Private Doc</th>
+                    <th>Date Created</th>
                     <th class="has-text-centered" colspan="3">Action</th>
                 </tr>
             </thead>
 
             <tbody>
-                <tr  v-for="image in filteredUserImageData" :key="image.id" >
-                    <td>{{image.id}}</td>
-                    <td>{{image.name}}</td>
-                    <td>{{image.type}}</td>
-                    <td>{{image.size}}</td>
-                    <td class="has-text-centered"><button class="fas fa-trash-alt button is-danger fa-lg is-outlined is-fullwidth"></button></td>
-                    <td class="has-text-centered"><button @click="toggleUpdateModal" class="fas fa-edit button is-danger fa-lg is-outlined is-fullwidth"></button></td>
-                    <td class="has-text-centered"><button class="fas fa-download button is-danger fa-lg is-outlined is-fullwidth"></button></td>
+                <tr  v-for="efile in pendingEfileList.docs" :key="efile._id" >
+                    <td>{{efile.name}}</td>
+                    <td>{{efile.sender.name}}</td>
+
+                        
+                    <td>
+                        <span v-for="recipient in efile.recipient" :key="'r'+recipient.id">
+                            {{recipient.name}}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span v-for="pending_recipient in efile.pending_recipient" :key="'p'+pending_recipient.id">
+                            {{pending_recipient.name}}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span v-for="approved_recipient in efile.approved_recipient" :key="'a'+approved_recipient.id">
+                            {{approved_recipient.name}}
+                        </span>
+                    </td>
+
+                    <td>{{efile.private_doc}}</td>
+                    <td>{{efile.created_at}}</td>
+
+                    <td class="has-text-centered"><button class="is-medium fas fa-file-signature button is-danger  is-outlined is-fullwidth"></button></td>
+                    <td class="has-text-centered"><button @click="getEfileDetailsToBeRejected(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-times-circle button is-danger is-outlined is-fullwidth"></button></td>
+                    <td class="has-text-centered"> <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-search-plus button is-danger is-outlined is-fullwidth" /></td>
                 </tr>
             </tbody>
             
-
+        <!-- {{this.pendingEfileList}} -->
         </table>
 
-        <div class="box pagination is-centered " role="navigation" aria-label="pagination">
-                <a class="pagination-previous">Previous</a>
-                <a class="pagination-next">Next</a>
+
+        <div class="box">
+
+            <div class="level">
+
+                    <div class="level-item">
+                        <div class="field has-addons">
+                            <p class="control">
+                                <a class="button" @click="firstPage"> First </a>
+                            </p>
+
+                            <p class="control">
+                                <a class="button" @click="lastPage"> Last </a>
+                            </p>
+                        </div>
+                    </div>
+                          
+
+                    <div class="level-item">
+                        <div class="field has-addons">
+                            <p class="control">
+                                <a class="button is-static"> Page: {{pendingEfileList.page}} </a>
+                            </p>
+
+                            <p class="control">
+                                <a class="button is-static"> Total: {{pendingEfileList.total}} </a>
+                            </p>
+                        </div>
+                    </div>
+                        
+
+                    <div class="level-item">
+                        <div class="field has-addons">
+                            <p class="control">
+                                <a class="button" @click="prevPage"> Previous </a>
+                            </p>
+
+                            <p class="control">
+                                <a class="button" @click="nextPage"> Next </a>
+                            </p>
+                        </div>  
+                    </div>
+                        
+
+            </div>
+
         </div>
 
         </div><!--table-container-->
@@ -106,95 +192,159 @@
 </template>
 
 <script>
+    import axios from 'axios'
+    import keys from '~/components/keys.js'
+    import loader from '~/components/loader'
+
+
     export default {
-        
+
+        components: {
+            loader
+        },
+
+        created(){
+            this.toggleLoader()
+            const config = {
+                method: 'GET',
+                url: `${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}`,
+            }
+
+            axios(config)
+                .then( res =>  {
+                    this.pendingEfileList = res.data
+                    this.pendingEfileTotalPageNo = res.data.total
+                    this.toggleLoader()
+                })
+                .catch( err => {
+                    this.toggleLoader()
+                    alert(err)
+                })
+        },
+
         data(){
             return{
 
-                updateModalState: false,
-                imageSearchInput : '',
-                selected : '',
-                imageSearchBy : 'ID',
+                isLoaderActive: false,
+                isRejectModalActive: false,
 
-                userImageData:    
-                [{
-  "id": "ddbde422-1186-4fb8-bd08-a833ed3cff6b",
-  "name": "curae.png",
-  "type": "image/png",
-  "size": "38.72.168.62/9"
-}, {
-  "id": "4e3c985e-4579-45af-ad72-02e05183e3f7",
-  "name": "molestie_nibh.tiff",
-  "type": "image/tiff",
-  "size": "158.124.238.25/5"
-}, {
-  "id": "480c36d8-6f14-4fc5-8ece-5a413b2ab492",
-  "name": "est.jpeg",
-  "type": "image/pjpeg",
-  "size": "171.210.139.129/27"
-}, {
-  "id": "9ac1c92c-6f4c-45ca-b3df-a7fee066c317",
-  "name": "vel_pede_morbi.jpeg",
-  "type": "image/pjpeg",
-  "size": "143.66.146.154/15"
-}, {
-  "id": "6c83c68a-d7ef-4d80-96b1-c6ff359db641",
-  "name": "sed.png",
-  "type": "image/png",
-  "size": "22.130.53.25/11"
-}, {
-  "id": "cdc45f73-9536-4092-a9c5-f3aabdb33a50",
-  "name": "ante_ipsum_primis.gif",
-  "type": "image/gif",
-  "size": "115.116.74.104/3"
-}, {
-  "id": "c54bfd98-ad49-4651-9165-bf9a9efc39ee",
-  "name": "blandit_nam.gif",
-  "type": "image/gif",
-  "size": "148.25.139.103/25"
-}, {
-  "id": "c8ce1b1e-526f-4c0d-8b0c-9f0ba8e083c5",
-  "name": "placerat_ante_nulla.jpeg",
-  "type": "image/pjpeg",
-  "size": "189.81.84.241/3"
-}, {
-  "id": "54127c84-8772-4b7d-917e-76bceebb378c",
-  "name": "ante.gif",
-  "type": "image/gif",
-  "size": "184.22.138.136/20"
-}
+                pendingEfileList: [],
 
-]
-
+                efileToBeRejectedDetails: {},
                 
+                pendingEfilePageNo : 1,
+                pendingEfileTotalPageNo : 0,
+
             }//return
         },//data
 
         computed:{
-            filteredUserImageData(){
-                return this.userImageData.filter( x => {
-                    //cannot search Numbers
-                   if(this.imageSearchBy === 'ID'){
-                        return x.id.includes(this.imageSearchInput)
-                   }
-                   else if(this.imageSearchBy === 'Name'){
-                        return x.name.includes(this.imageSearchInput)
-                   }
-                   else if(this.imageSearchBy === 'Type'){
-                        return x.type.includes(this.imageSearchInput)
-                   }
-                   else{
-                       return x
-                   }
-
-
-                })
-            },
+ 
         },//computed
 
         methods:{
-            toggleUpdateModal(){
-                this.updateModalState = !this.updateModalState
+
+            showNotif(type, title, icon, msg){
+                return{
+                    type: type,
+                    group: 'vnotif',
+                    title: `<span ><span class='fas ${icon} fa-2x'></span><span class='title is-5'> ${title}:</span></span>`,
+                    text: `<p class='subtitle is-5'>${msg}</p>`
+                }
+            },
+
+            firstPage(){
+                this.toggleLoader()
+
+                this.pendingEfilePageNo = 1
+
+                axios.get(`${keys.BASE_URL}/api/v1/efiles?page=${this.pendingEfilePageNo}`)
+                    .then( res =>  {
+                        this.pendingEfileList = res.data 
+                        this.toggleLoader()
+                    })
+                    .catch( err => {
+                        this.toggleLoader()
+                        this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err) )
+                    })
+            },
+
+            lastPage(){
+                this.toggleLoader()
+
+                this.pendingEfilePageNo = this.pendingEfileTotalPageNo
+
+                axios.get(`${keys.BASE_URL}/api/v1/efiles?page=${this.pendingEfilePageNo}`)
+                    .then( res =>  {
+                        this.pendingEfileList = res.data 
+                        this.toggleLoader()
+                    })
+                    .catch( err => {
+                        this.toggleLoader()
+                        this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err) )
+                    })
+            },
+
+
+
+            nextPage(){
+                this.toggleLoader()
+
+                this.pendingEfilePageNo += 1
+
+                axios.get(`${keys.BASE_URL}/api/v1/efiles?page=${this.pendingEfilePageNo}`)
+                    .then( res =>  {
+
+                        if( (res.data.docs).length === 0){
+                            this.pendingEfilePageNo -= 1
+                            this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','no more data to display') )
+                            this.toggleLoader()
+                        }else{
+                            this.pendingEfileList = res.data 
+                            this.toggleLoader()
+                        }
+                        
+                    })
+                    .catch( err => {
+                        this.toggleLoader()
+                        this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err) )
+                    })
+            },
+
+            prevPage(){
+                
+                if(this.pendingEfilePageNo === 1){
+                    
+                }else{
+                    this.pendingEfilePageNo -= 1
+                    this.toggleLoader()
+                    
+                    axios.get(`${keys.BASE_URL}/api/v1/efiles?page=${this.pendingEfilePageNo}`)
+                        .then( res => {
+                            this.toggleLoader()
+                            this.pendingEfileList = res.data 
+                        })
+                        .catch( err => {
+                            this.toggleLoader()
+                            this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err) )
+                        })
+                }
+            },
+
+            toggleRejectModal(){
+                this.isRejectModalActive = !this.isRejectModalActive
+            },
+
+            toggleLoader(){
+                this.isLoaderActive = !this.isLoaderActive
+            },
+
+            getEfileDetailsToBeRejected(id, name){
+                this.efileToBeRejectedDetails = {
+                    id : id,
+                    name: name
+                }
+                this.toggleRejectModal()
             },
 
         }
