@@ -55,36 +55,38 @@
                             Change Password:
                         </p>
 
-                        <div class="field">
-                            <label class="label">Password</label>
-                            <div class="control">
-                                <input  name="password" 
-                                        v-model="password"
-                                        class="input" 
-                                        :class="{ 'is-danger': errors.has('password') }" 
-                                        v-validate="{required:true, min:6, is:confirm_password}" 
-                                        type="password" 
-                                        placeholder="Password">
-                                <small class="has-text-danger">{{ errors.first('password') }}</small>
-                            </div>
-                        </div> 
 
-                        <div class="field">
-                            <label class="label">Re-enter Password</label>
-                            <div class="control">
-                                <input  name="confirm_password" 
-                                        class="input" 
-                                        data-vv-as ="confirm password"
-                                        :class="{ 'is-danger': errors.has('password:is') }"
-                                        v-model="confirm_password"
-                                        v-validate="'required'" 
-                                        type="password" 
-                                        placeholder="Confirm Password">
-                                <small class="has-text-danger">{{ errors.first('confirm_password') }}</small><br>
-                                <small class="has-text-danger">{{ errors.first('password:is') }}</small>
-                                    
-                            </div>
-                        </div> 
+                            <div class="field">
+                                <label class="label">Password</label>
+                                <div class="control">
+                                    <input  name="password" 
+                                            v-model="password"
+                                            class="input" 
+                                            :class="{ 'is-danger': errors.has('password') }" 
+                                            v-validate="{required:true, min:6, is:confirm_password}" 
+                                            type="password" 
+                                            placeholder="Password">
+                                    <small class="has-text-danger">{{ errors.first('password') }}</small>
+                                </div>
+                            </div> 
+
+                            <div class="field">
+                                <label class="label">Re-enter Password</label>
+                                <div class="control">
+                                    <input  name="confirm_password" 
+                                            class="input" 
+                                            data-vv-as ="confirm password"
+                                            :class="{ 'is-danger': errors.has('password:is') }"
+                                            v-model="confirm_password"
+                                            v-validate="'required'" 
+                                            type="password" 
+                                            placeholder="Confirm Password">
+                                    <small class="has-text-danger">{{ errors.first('confirm_password') }}</small><br>
+                                    <small class="has-text-danger">{{ errors.first('password:is') }}</small>
+                                        
+                                </div>
+                            </div> 
+
 
                         <div class="columns">
                             <div class="column">
@@ -119,14 +121,15 @@
                                     <div class="field">
                                         <label class="label">First Name</label>
                                         <div class="control">
-                                            <input  name="name.firstName" 
+                                            <input  name="name.firstName"
+                                                    data-vv-scope="updateNameForm"
                                                     v-model="firstName"
                                                     data-vv-as="first name"
                                                     class="input" 
                                                     :class="{ 'is-danger': errors.has('name.firstName') }" 
-                                                    v-validate="'required'" 
+                                                    v-validate.initial="'required'" 
                                                     type="text" 
-                                                    placeholder="First Name">
+                                                    :placeholder="firstName">
                                             <small class="has-text-danger">{{ errors.first('name.firstName') }}</small>
                                         </div>
                                     </div> 
@@ -134,12 +137,13 @@
                                     <div class="field">
                                         <label class="label">Middle Name</label>
                                         <div class="control">
-                                            <input  name="name.middleName" 
+                                            <input  name="name.middleName"
+                                                    data-vv-scope="updateNameForm"
                                                     v-model="middleName"
                                                     data-vv-as="middle name"
                                                     class="input" 
                                                     :class="{ 'is-danger': errors.has('name.middleName') }" 
-                                                    v-validate="'required'" 
+                                                    v-validate.initial="'required'" 
                                                     type="text" 
                                                     placeholder="Middle Name">
                                             <small class="has-text-danger">{{ errors.first('name.middleName') }}</small>
@@ -150,7 +154,8 @@
                                         <div class="control">
                                             <label class="label">Last Name</label>
                                             <input  name="name.lastName"
-                                                    v-model="lastName" 
+                                                    data-vv-scope="updateNameForm"
+                                                    v-model="lastName"
                                                     data-vv-as="last name"
                                                     class="input" 
                                                     :class="{ 'is-danger': errors.has('name.lastName') }" 
@@ -266,6 +271,8 @@
 
 <script>
 
+
+
     import axios from 'axios'
     import keys from '~/components/keys.js'
     import loader from '~/components/loader'
@@ -290,6 +297,10 @@
                 firstName: this.$store.state.user_details.user.name.first_name,  
                 middleName: this.$store.state.user_details.user.name.middle_name,  
                 lastName: this.$store.state.user_details.user.name.last_name, 
+
+                // firstName: this.$store.state.user_details.user.name.first_name,  
+                // middleName: this.$store.state.user_details.user.name.middle_name,  
+                // lastName: this.$store.state.user_details.user.name.last_name,
             }
         },//data
 
@@ -322,7 +333,7 @@
 
 
             validateUpdateNameFormBeforeSubmit() {
-                this.$validator.validateAll().then((res) => {
+                this.$validator.validateAll("updateNameForm").then((res) => {
                     //check if the form has no error and the signature has been saved
                     !res ? this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','form not valid ..!') )
                     : this.updateUserName()
@@ -330,7 +341,7 @@
             },
 
             validateUpdatePasswordFormBeforeSubmit() {
-                this.$validator.validateAll().then((res) => {
+                this.$validator.validateAll("updatePasswordForm").then((res) => {
                     //check if the form has no error and the signature has been saved
                     !res ? this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','form not valid ..!') )
                     : this.updateUserPassword()

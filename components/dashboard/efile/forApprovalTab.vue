@@ -1,7 +1,6 @@
 <template>
     <div class="section">
 
-        <loader :isActive="this.isLoaderActive"/>
 
 <!-- <div class="modal" :class="{'is-active': this.updateModalState}">
   <div @click="toggleUpdateModal" class="modal-background"/>
@@ -84,6 +83,41 @@
 
             </div>
 
+            <div class="modal" :class="{'is-active': this.isApproveModalActive}">
+                <div @click="toggleApproveModal" class="modal-background"/>
+
+                <div class="modal-content">
+                    <div class="box">
+                        <p class="has-text-centered subtitle is-4">
+                            Are you sure you want to approve this:
+                        </p>
+
+                        <div class="columns">
+                            <div class="column">
+                                <p class="subtitle is-6"> <b>Efile ID:</b> {{this.efileToBeApprovedDetails.id}}</p>
+                            </div>
+
+                            <div class="column">
+                                <p class="subtitle is-6"> <b>Efile Name:</b> {{this.efileToBeApprovedDetails.name}}</p>
+                            </div>
+
+                        </div>
+
+                        <div class="columns">
+                            <div class="column">
+                                <a :href="`dashboard/efile/view?id=${efileToBeApprovedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a>
+                            </div>
+
+                            <div class="column">
+                                <a @click="approveEfile" class="is-medium button is-danger is-outlined is-fullwidth">Approve</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
        
         <!--table-->
         <div class="table-container">
@@ -129,9 +163,9 @@
                     <td>{{efile.private_doc}}</td>
                     <td>{{efile.created_at}}</td>
 
-                    <td class="has-text-centered"><button class="is-medium fas fa-file-signature button is-danger  is-outlined is-fullwidth"></button></td>
+                    <td class="has-text-centered"><button @click="getEfileDetailsToBeApproved(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-file-signature button is-danger  is-outlined is-fullwidth"></button></td>
                     <td class="has-text-centered"><button @click="getEfileDetailsToBeRejected(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-times-circle button is-danger is-outlined is-fullwidth"></button></td>
-                    <td class="has-text-centered"> <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-search-plus button is-danger is-outlined is-fullwidth" /></td>
+                    <!-- <td class="has-text-centered"> <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-search-plus button is-danger is-outlined is-fullwidth" /></td> -->
                 </tr>
             </tbody>
             
@@ -187,6 +221,8 @@
 
         </div><!--table-container-->
         
+
+        <loader :isActive="this.isLoaderActive"/>
     </div>
 </template>
 
@@ -211,8 +247,9 @@
 
             axios(config)
                 .then( res =>  {
+                    console.log(res.data)
                     this.pendingEfileList = res.data
-                    this.pendingEfileTotalPageNo = res.data.total
+                    this.pendingEfileTotalPageNo = res.data.pages
                     this.toggleLoader()
                 })
                 .catch( err => {
@@ -226,10 +263,13 @@
 
                 isLoaderActive: false,
                 isRejectModalActive: false,
+                isApproveModalActive: false,
 
                 pendingEfileList: [],
 
                 efileToBeRejectedDetails: {},
+
+                efileToBeApprovedDetails: {},
                 
                 pendingEfilePageNo : 1,
                 pendingEfileTotalPageNo : 0,
@@ -257,7 +297,7 @@
 
                 this.pendingEfilePageNo = 1
 
-                axios.get(`${keys.BASE_URL}/api/v1/efiles?page=${this.pendingEfilePageNo}`)
+                axios.get(`${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}?page=${this.pendingEfilePageNo}`)
                     .then( res =>  {
                         this.pendingEfileList = res.data 
                         this.toggleLoader()
@@ -273,7 +313,7 @@
 
                 this.pendingEfilePageNo = this.pendingEfileTotalPageNo
 
-                axios.get(`${keys.BASE_URL}/api/v1/efiles?page=${this.pendingEfilePageNo}`)
+                axios.get(`${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}?page=${this.pendingEfilePageNo}`)
                     .then( res =>  {
                         this.pendingEfileList = res.data 
                         this.toggleLoader()
@@ -284,14 +324,12 @@
                     })
             },
 
-
-
             nextPage(){
                 this.toggleLoader()
 
                 this.pendingEfilePageNo += 1
 
-                axios.get(`${keys.BASE_URL}/api/v1/efiles?page=${this.pendingEfilePageNo}`)
+                axios.get(`${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}?page=${this.pendingEfilePageNo}`)
                     .then( res =>  {
 
                         if( (res.data.docs).length === 0){
@@ -318,7 +356,7 @@
                     this.pendingEfilePageNo -= 1
                     this.toggleLoader()
                     
-                    axios.get(`${keys.BASE_URL}/api/v1/efiles?page=${this.pendingEfilePageNo}`)
+                    axios.get(`${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}?page=${this.pendingEfilePageNo}`)
                         .then( res => {
                             this.toggleLoader()
                             this.pendingEfileList = res.data 
@@ -334,6 +372,10 @@
                 this.isRejectModalActive = !this.isRejectModalActive
             },
 
+            toggleApproveModal(){
+                this.isApproveModalActive = !this.isApproveModalActive
+            },
+
             toggleLoader(){
                 this.isLoaderActive = !this.isLoaderActive
             },
@@ -344,6 +386,37 @@
                     name: name
                 }
                 this.toggleRejectModal()
+            },
+
+            getEfileDetailsToBeApproved(id, name){
+                this.efileToBeApprovedDetails = {
+                    id : id,
+                    name: name
+                }
+                this.toggleApproveModal()
+            },
+            
+            approveEfile(){
+                this.toggleLoader()
+                
+
+                const config = {
+                    method: 'GET',
+                    url: `${keys.BASE_URL}/api/v1/efiles/approve/${this.efileToBeApprovedDetails.id}`,
+                }
+
+                axios(config)
+                    .then( res =>  {
+                        this.toggleLoader()
+                        // alert(JSON.stringify(res))
+                        this.toggleApproveModal()
+                        this.$notify( this.showNotif('success', 'Success', 'fa-check-circle', `efile was approved & sign`) )
+                    })
+                    .catch( err => {
+                        this.toggleLoader()
+                        alert(err)
+                    })
+
             },
 
         }
