@@ -216,7 +216,7 @@
 
                                 <div>
                                     <!-- <nuxt-link  type="submit" class="button is-fullwidth is-danger " to="/dashboard">Submit</nuxt-link> -->
-                                    <button @click="validateBeforeSubmit" type="button" class="button is-fullwidth is-danger" >Submit</button>
+                                    <button @click="validateBeforeSubmit" type="button" class="button is-fullwidth is-danger">Submit</button>
                                 </div>
                     
                             </div> <!--box-->

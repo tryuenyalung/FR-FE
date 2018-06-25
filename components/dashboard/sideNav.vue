@@ -6,7 +6,7 @@
             <!-- <img class="is-paddingless is-marginless" src="~/assets/images/logo.png" alt="" ><br><br>  -->
 
             <figure :class="'avatar has-text-centered'">
-                <img :src=" this.$store.state.user_details.user.avatar" >
+                <img :src="this.$store.state.user_details.user.avatar" >
             </figure>
 
             <aside class="menu">
