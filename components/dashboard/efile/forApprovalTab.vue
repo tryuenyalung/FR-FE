@@ -144,19 +144,19 @@
                         
                     <td>
                         <span v-for="recipient in efile.recipient" :key="'r'+recipient.id">
-                            {{recipient.name}}
+                            {{recipient.name}},&nbsp;
                         </span>
                     </td>
 
                     <td>
                         <span v-for="pending_recipient in efile.pending_recipient" :key="'p'+pending_recipient.id">
-                            {{pending_recipient.name}}
+                            {{pending_recipient.name}},&nbsp;
                         </span>
                     </td>
 
                     <td>
                         <span v-for="approved_recipient in efile.approved_recipient" :key="'a'+approved_recipient.id">
-                            {{approved_recipient.name}}
+                            {{approved_recipient.name}},&nbsp;
                         </span>
                     </td>
 
@@ -227,6 +227,7 @@
 </template>
 
 <script>
+    import _ from 'lodash'
     import axios from 'axios'
     import keys from '~/components/keys.js'
     import loader from '~/components/loader'
@@ -243,6 +244,7 @@
             const config = {
                 method: 'GET',
                 url: `${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}`,
+                
             }
 
             axios(config)
@@ -396,19 +398,40 @@
                 this.toggleApproveModal()
             },
             
+            updatePendingEfileListOnApprove(idToRemove){
+                //find index by id on the list
+                let indexToSplice = _.findIndex( this.pendingEfileList.docs , { '_id' :  String(idToRemove) } )
+                //remove data from pendingEfileList
+                this.pendingEfileList.docs.splice(indexToSplice, 1)
+            },
+
             approveEfile(){
                 this.toggleLoader()
                 
+                const body =  {
+                    name:{
+                        first_name : this.$store.state.user_details.user.name.first_name,
+                        middle_name : this.$store.state.user_details.user.name.middle_name,
+                        last_name : this.$store.state.user_details.user.name.last_name,
+                    },
+                    position: this.$store.state.user_details.user.position,
+                    signature:  this.$store.state.user_details.user.signature
+                }
 
                 const config = {
-                    method: 'GET',
+                    method: 'PUT',
                     url: `${keys.BASE_URL}/api/v1/efiles/approve/${this.efileToBeApprovedDetails.id}`,
+                    data : JSON.stringify(body),
+                    headers:{
+                         "Content-Type": "application/json"
+                    }
+                       
                 }
 
                 axios(config)
                     .then( res =>  {
+                        this.updatePendingEfileListOnApprove(this.efileToBeApprovedDetails.id)
                         this.toggleLoader()
-                        // alert(JSON.stringify(res))
                         this.toggleApproveModal()
                         this.$notify( this.showNotif('success', 'Success', 'fa-check-circle', `efile was approved & sign`) )
                     })

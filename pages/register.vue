@@ -383,8 +383,8 @@
                     password: this.password,
                     name: {
                         first_name : this.firstName,
-                        middle_name : this.lastName,
-                        last_name : this.middleName
+                        middle_name : this.middleName,
+                        last_name : this.lastName
                     },
                     signature: signature,
                     gender: this.gender,
