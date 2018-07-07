@@ -10,7 +10,7 @@ const routerBase = process.env.DEPLOY_ENV === 'GH_PAGES' ? {
 
 module.exports = {
   mode: 'spa',
-
+ 
   ...routerBase,
   /*
   ** Headers of the page
@@ -23,7 +23,7 @@ module.exports = {
       { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/x-icon' },
       { rel: 'stylesheet', href: 'https://use.fontawesome.com/releases/v5.1.0/css/all.css' }
     ]
   },

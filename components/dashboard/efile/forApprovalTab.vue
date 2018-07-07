@@ -64,7 +64,7 @@
                         <div class="columns">
                             <div class="column">
                                 <p class="label">Reason to Reject:</p>
-                                <textarea class="textarea" placeholder="Reason of Rejection" rows="10" />
+                                <textarea class="textarea" placeholder="Reason of Rejection" rows="10" v-model="rejection_reason"/>
                             </div>
                         </div>
 
@@ -74,7 +74,7 @@
                             </div>
 
                             <div class="column">
-                                <a :href="`dashboard/efile/view?id=${efileToBeRejectedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">Reject</a>
+                                <button @click="validateRejectionReason" class="is-medium button is-danger is-outlined is-fullwidth">Reject</button>
                             </div>
                         </div>
 
@@ -269,6 +269,8 @@
 
                 pendingEfileList: [],
 
+                rejection_reason: '',
+
                 efileToBeRejectedDetails: {},
 
                 efileToBeApprovedDetails: {},
@@ -280,7 +282,17 @@
         },//data
 
         computed:{
- 
+            getUserDetails(){
+                return {
+                    id: this.$store.state.user_details.user._id,
+                    full_name : `${this.$store.state.user_details.user.name.first_name} ${this.$store.state.user_details.user.name.middle_name} ${this.$store.state.user_details.user.name.last_name}` ,
+                    name :{
+                        first_name: this.$store.state.user_details.user.name.first_name,
+                        middle_name: this.$store.state.user_details.user.name.middle_name,
+                        last_name: this.$store.state.user_details.user.name.last_name,
+                    }
+                }
+            },
         },//computed
 
         methods:{
@@ -437,9 +449,55 @@
                     })
                     .catch( err => {
                         this.toggleLoader()
-                        alert(err)
+                        this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
                     })
 
+            },
+
+            rejectEfile(){
+                this.toggleLoader()
+
+                const body =  {
+                    rejected_recipient: [
+                        {
+                            id: this.getUserDetails.id,
+                            name: this.getUserDetails.full_name
+                        }
+                    ],
+                    rejection_reason:  this.rejection_reason
+                }
+
+
+                const config = {
+                    method: 'PUT',
+                    url: `${keys.BASE_URL}/api/v1/efiles/${this.efileToBeRejectedDetails.id}`,
+                    data : JSON.stringify(body),
+                    headers:{
+                         "Content-Type": "application/json"
+                    }
+                       
+                }
+
+                axios(config)
+                    .then( res =>  {
+                        this.updatePendingEfileListOnApprove(this.efileToBeRejectedDetails.id)
+                        this.toggleLoader()
+                        this.toggleRejectModal()
+                        this.$notify( this.showNotif('success', 'Success', 'fa-check-circle', `efile was rejected, notifying the sender`) )
+                    })
+                    .catch( err => {
+                        this.toggleLoader()
+                        this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+                       
+                    })
+            },
+
+            validateRejectionReason(){
+                if(this.rejection_reason.length === 0  || this.rejection_reason === null || /^\s*$/.test(this.rejection_reason)){
+                    this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','write a valid reason to reject this efile') )
+                }else{
+                    this.rejectEfile()
+                }
             },
 
         }
