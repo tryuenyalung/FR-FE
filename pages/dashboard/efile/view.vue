@@ -32,7 +32,7 @@
                 readonly: 1,
                 content_style: keys.TINYMCE_STYLE,
                 theme: 'modern',
-                plugins: 'print fullpage',
+                plugins: 'code print fullpage',
             }
         },
 

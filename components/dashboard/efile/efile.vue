@@ -31,13 +31,13 @@
                     </a>
                 </li>
 
-                <li @click="changeActiveTab('approved')" :class="{'is-active' : activeTab === 'approved' }">
+                <li @click="changeActiveTab('private efile')" :class="{'is-active' : activeTab === 'private efile' }">
                     <a>
                         <span>Private Efile</span>
                     </a>
                 </li>
 
-                <li @click="changeActiveTab('rejected')" :class="{'is-active' : activeTab === 'rejected' }">
+                <li @click="changeActiveTab('public efile')" :class="{'is-active' : activeTab === 'public efile' }">
                     <a>
                         <span>Public Efile</span>
                     </a>
@@ -48,9 +48,10 @@
 
         <!--tab's content-->
         <createEfile v-if="activeTab === 'create efile' "/>
-        <approved  v-if="activeTab === 'approved' "/>
         <forApproval  v-if="activeTab === 'for approval' " />
         <rejectedEfileTab  v-if="activeTab === 'rejected efile' "/>
+        <privateEfileTab  v-if="activeTab === 'private efile' "/>
+        <publicEfileTab  v-if="activeTab === 'public efile' "/>
 
 
 
@@ -59,17 +60,19 @@
 
 <script>
     import createEfile from './createEfileTab'
-    import approved from './approvedTab'
     import forApproval from './forApprovalTab'
     import rejectedEfileTab from './rejectedEfileTab'
+    import publicEfileTab from './publicEfileTab'
+    import privateEfileTab from './privateEfileTab'
 
     export default {
 
         components:{
             createEfile,
-            approved,
             forApproval,
-            rejectedEfileTab
+            rejectedEfileTab,
+            publicEfileTab,
+            privateEfileTab
         },//components
 
         data(){

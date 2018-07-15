@@ -63,7 +63,7 @@
 
                             <tr v-for="users in filteredUserList" :key="users._id">
                                 <td>
-                                    <input v-model="recipientList" :value="{id: users._id, name: `${users.name.first_name} ${users.name.middle_name} ${users.name.last_name}` }" class="yuen" type="checkbox">
+                                    <input v-model="recipientList" :value="{id: users._id, name: `${users.name.first_name} ${users.name.middle_name} ${users.name.last_name}` }" class="chk_box_big" type="checkbox">
                                 </td>
                                 <td>{{users.name.first_name}} {{users.name.middle_name}} {{users.name.last_name}} </td>
                                 <td>{{users.username}}</td>
@@ -301,7 +301,7 @@
   width: 200px;
 }
 
-.yuen {
+.chk_box_big {
     height: 30px;
     width: 30px;
 }
