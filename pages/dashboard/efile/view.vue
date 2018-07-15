@@ -44,6 +44,9 @@
             const config = {
                 method: 'GET',
                 url: `${keys.BASE_URL}/api/v1/efiles/${id}`,
+                headers:{
+                    "Authorization" : `Bearer ${this.$store.state.user_details.token}`
+                }
             }
 
             if(id === undefined  | id === null){

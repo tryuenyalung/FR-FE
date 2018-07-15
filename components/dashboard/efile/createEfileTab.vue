@@ -108,6 +108,9 @@
             const config = {
                 method: 'GET',
                 url: `${keys.BASE_URL}/api/v1/users/search?status=y`,
+                headers:{
+                    "Authorization" : `Bearer ${this.$store.state.user_details.token}`
+                }
             }
 
             axios(config)
@@ -222,7 +225,7 @@
 
             validateEfileContent(){
                 console.log(this.efileContent);
-                (this.efileContent !== null) ? this.toggleRecipientModal()
+                (this.efileContent !== null || this.efileContent.length === 0 ||  /^\s*$/.test(this.efileContent) ) ? this.toggleRecipientModal()
                 : this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','empty content is not allowed') )
             },
 
@@ -244,13 +247,14 @@
             },
 
             submitEfile(){
-                  
+
                  const config = {
                     method: 'POST',
                     url: `${keys.BASE_URL}/api/v1/efiles`,
                     data:  this.buildEfileForm,
                     headers: { 
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                         "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                     }
                 }
 

@@ -374,9 +374,10 @@
                     data: this.serializeUpdateNameForm() ,
                     headers: { 
                         "Content-Type": "application/json",
+                        "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                     }
                 }
-
+ 
                 axios(config)
                     .then(res => {  
                         this.$store.dispatch('user_details/UPDATE_USER_NAME', res.data)
@@ -398,6 +399,7 @@
                     data: this.serializeUpdatePasswordForm() ,
                     headers: { 
                         "Content-Type": "application/json",
+                        "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                     }
                 }
 
@@ -424,7 +426,8 @@
                     url: `${keys.BASE_URL}/api/v1/files`,
                     data: formData,
                     headers: { 
-                        "Content-Type": "multipart/form-data"
+                        "Content-Type": "multipart/form-data",
+                        "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                     }
                 }
 
@@ -452,7 +455,8 @@
                         "avatar": avatarUrl
                     },
                     headers: { 
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                     }
                 }
 

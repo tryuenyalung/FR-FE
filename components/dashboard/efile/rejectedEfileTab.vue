@@ -1,120 +1,71 @@
-<template>
-    <div class="section">
+<template><div>
+    
+            <div class="modal" :class="{'is-active': this.isDeleteModalActive}">
+                <div @click="toggleDeleteModal" class="modal-background"/>
+
+                <div class="modal-content">
+                    <div class="box">
+                        <p class="has-text-centered subtitle is-4">
+                            Are you sure you want to delete this:
+                        </p>
+
+                        <div class="columns">
+                            <div class="column">
+                                <p class="subtitle is-6"> <b>Efile ID:</b> {{this.efileToBeDeletedDetails.id}}</p>
+                                <p class="subtitle is-6"> <b>Efile Name:</b> {{this.efileToBeDeletedDetails.name}}</p>
+
+                            </div>
+
+                            <div class="column">
+                                 <p class="subtitle is-6  "> <b>Reason for rejecting efile:</b> {{this.efileToBeDeletedDetails.rejection_reason}}</p>
+                            </div>
+
+                        </div>
 
 
-<!-- <div class="modal" :class="{'is-active': this.updateModalState}">
-  <div @click="toggleUpdateModal" class="modal-background"/>
+                        <div class="columns">
+                            <div class="column">
+                                <a :href="`dashboard/efile/view?id=${efileToBeDeletedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a>
+                            </div>
 
-  <div class="modal-content">
-      <div class="box">
+                            <div class="column">
+                                <button @click="deleteEfile" class="is-medium button is-danger is-outlined is-fullwidth">Delete</button>
+                            </div>
+                        </div>
 
-          <h3 class="subtitle is-3 has-text-centered">Update Image</h3>
+                    </div>
+                </div>
 
-            <div class="file has-name is-boxed is-centered is-danger">
-                <label class="file-label">
-                    <input class="file-input" type="file" name="resume">
-                    <span class="file-cta">
-                    <span class="file-icon">
-                        <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="file-label">
-                        Choose a image file…
-                    </span>
-                    </span>
-                    <span class="file-name">
-                    Screen Shot 2017-07-29 at 15.54.25.png
-                    </span>
-                </label>
+            </div>
+
+            <div class="modal" :class="{'is-active': this.isUpdateModalActive}">
+                <div @click="toggleUpdateModal" class="modal-background"/>
+
+                <div class="modal-content">
+                    <div class="box">
+                        <p class="has-text-centered subtitle is-4">
+                            Update efile content:
+                        </p>
+
+                        <div class="columns ">
+                            <div class="column">
+                                <p class="subtitle is-6 "> <b>Efile ID:</b> {{this.efileToBeUpdated.id}}</p>
+                                <p class="subtitle is-6  "> <b>Efile Name:</b> {{this.efileToBeUpdated.name}}</p>
+                                <p class="subtitle is-6  "> <b>Reason for rejecting efile:</b> {{this.efileToBeUpdated.rejection_reason}}</p>
+                            </div>
 
                             
-            </div>
-
-             <div>
-                <button class="button is-danger is-pulled-right is-outlined">Update</button>
-                <br>
-             </div>   
-
-
-      </div>
-  </div>
-
-</div> -->
-
-
-            <div class="modal" :class="{'is-active': this.isRejectModalActive}">
-                <div @click="toggleRejectModal" class="modal-background"/>
-
-                <div class="modal-content">
-                    <div class="box">
-                        <p class="has-text-centered subtitle is-4">
-                            Are you sure you want to reject this:
-                        </p>
-
-                        <div class="columns">
-                            <div class="column">
-                                <p class="subtitle is-6"> <b>Efile ID:</b> {{this.efileToBeRejectedDetails.id}}</p>
-                            </div>
-
-                            <div class="column">
-                                <p class="subtitle is-6"> <b>Efile Name:</b> {{this.efileToBeRejectedDetails.name}}</p>
-                            </div>
-
                         </div>
 
-                        <div class="columns">
-                            <div class="column">
-                                <p class="label">Reason to Reject:</p>
-                                <textarea class="textarea" placeholder="Reason of Rejection" rows="10" v-model="rejection_reason"/>
-                            </div>
-                        </div>
-
-                        <div class="columns">
-                            <div class="column">
-                                <a :href="`dashboard/efile/view?id=${efileToBeRejectedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a>
-                            </div>
-
-                            <div class="column">
-                                <button @click="validateRejectionReason" class="is-medium button is-danger is-outlined is-fullwidth">Reject</button>
-                            </div>
-                        </div>
+                    <div class="modal-foot">
+                        <a :href="`dashboard/efile/update?id=${efileToBeUpdated.id}`" target="_blank" class=" button is-danger is-outlined is-pulled-right">Update</a>
+                        <br>
+                    </div>
 
                     </div>
                 </div>
 
-            </div>
-
-            <div class="modal" :class="{'is-active': this.isApproveModalActive}">
-                <div @click="toggleApproveModal" class="modal-background"/>
-
-                <div class="modal-content">
-                    <div class="box">
-                        <p class="has-text-centered subtitle is-4">
-                            Are you sure you want to approve this:
-                        </p>
-
-                        <div class="columns">
-                            <div class="column">
-                                <p class="subtitle is-6"> <b>Efile ID:</b> {{this.efileToBeApprovedDetails.id}}</p>
-                            </div>
-
-                            <div class="column">
-                                <p class="subtitle is-6"> <b>Efile Name:</b> {{this.efileToBeApprovedDetails.name}}</p>
-                            </div>
-
-                        </div>
-
-                        <div class="columns">
-                            <div class="column">
-                                <a :href="`dashboard/efile/view?id=${efileToBeApprovedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a>
-                            </div>
-
-                            <div class="column">
-                                <a @click="approveEfile" class="is-medium button is-danger is-outlined is-fullwidth">Approve</a>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+                
 
             </div>
 
@@ -126,7 +77,7 @@
             <thead>
                 <tr  class="has-text-centered">
                     <th>Efile Name</th>
-                    <th>Sender</th>
+                    <th>Rejected By</th>
                     <th>Recipients</th>
                     <th>Pending for Approval</th>
                     <th>Approved Recipients</th>
@@ -137,9 +88,9 @@
             </thead>
 
             <tbody>
-                <tr  v-for="efile in pendingEfileList.docs" :key="efile._id" >
+                <tr  v-for="efile in rejectedEfileList.docs" :key="efile._id" >
                     <td>{{efile.name}}</td>
-                    <td>{{efile.sender.name}}</td>
+                    <td>{{efile.rejected_recipient.name}}</td>
 
                         
                     <td>
@@ -163,13 +114,13 @@
                     <td>{{efile.private_doc}}</td>
                     <td>{{efile.created_at}}</td>
 
-                    <td class="has-text-centered"><button @click="getEfileDetailsToBeApproved(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-file-signature button is-danger  is-outlined is-fullwidth"></button></td>
-                    <td class="has-text-centered"><button @click="getEfileDetailsToBeRejected(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-times-circle button is-danger is-outlined is-fullwidth"></button></td>
+                    <td class="has-text-centered"><button @click="getEfileDetailsToBeUpdated(`${efile._id}`, `${efile.name}`, `${efile.rejection_reason}`)" class="is-medium fas fa-edit button is-danger  is-outlined is-fullwidth"></button></td>
+                    <td class="has-text-centered"><button @click="getEfileDetailsToBeDeleted(`${efile._id}`, `${efile.name}`, `${efile.rejection_reason}`)" class="is-medium fas fa-times-circle button is-danger is-outlined is-fullwidth"></button></td>
                     <!-- <td class="has-text-centered"> <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-search-plus button is-danger is-outlined is-fullwidth" /></td> -->
                 </tr>
             </tbody>
             
-        <!-- {{this.pendingEfileList}} -->
+        <!-- {{this.rejectedEfileList}} -->
         </table>
 
 
@@ -193,11 +144,11 @@
                     <div class="level-item">
                         <div class="field has-addons">
                             <p class="control">
-                                <a class="button is-static"> Page: {{pendingEfileList.page}} </a>
+                                <a class="button is-static"> Page: {{rejectedEfileList.page}} </a>
                             </p>
 
                             <p class="control">
-                                <a class="button is-static"> Total: {{pendingEfileList.total}} </a>
+                                <a class="button is-static"> Total: {{rejectedEfileTotalList}} </a>
                             </p>
                         </div>
                     </div>
@@ -223,10 +174,13 @@
         
 
         <loader :isActive="this.isLoaderActive"/>
-    </div>
-</template>
+
+</div></template>
+
+
 
 <script>
+
     import _ from 'lodash'
     import axios from 'axios'
     import keys from '~/components/keys.js'
@@ -240,22 +194,23 @@
         },
 
         created(){
-            this.toggleLoader()
 
+            this.toggleLoader()
             const config = {
                 method: 'GET',
-                url: `${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}`,
+                url: `${keys.BASE_URL}/api/v1/efiles/rejected/${this.$store.state.user_details.user._id}`,
                 headers:{
                     "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                 }
-                
             }
 
             axios(config)
                 .then( res =>  {
                     console.log(res.data)
-                    this.pendingEfileList = res.data
-                    this.pendingEfileTotalPageNo = res.data.pages
+                    // this.rejectedEfileList = res.data
+
+                    this.$store.dispatch('rejected_efile_list/STORE_REJECTED_EFILE_LIST', res.data)
+                    this.rejectedEfileTotalPages = res.data.pages
                     this.toggleLoader()
                 })
                 .catch( err => {
@@ -264,23 +219,23 @@
                 })
         },
 
+       
+
         data(){
             return{
 
                 isLoaderActive: false,
-                isRejectModalActive: false,
-                isApproveModalActive: false,
-
-                pendingEfileList: [],
+                isDeleteModalActive: false,
+                isUpdateModalActive: false,
 
                 rejection_reason: '',
 
-                efileToBeRejectedDetails: {},
+                efileToBeDeletedDetails: {},
 
-                efileToBeApprovedDetails: {},
+                efileToBeUpdated: {},
                 
-                pendingEfilePageNo : 1,
-                pendingEfileTotalPageNo : 0,
+                rejectedEfilePageNo : 1,
+                // rejectedEfileTotalPages : 0,
 
             }//return
         },//data
@@ -297,6 +252,32 @@
                     }
                 }
             },
+
+            rejectedEfileList(){
+               return this.$store.state.rejected_efile_list.rejectedEfileList
+            },
+
+            rejectedEfileTotalList :{
+                // return this.$store.state.rejected_efile_list.rejectedEfileList.total
+                get: function () {
+                   return this.$store.state.rejected_efile_list.rejectedEfileList.total
+                },
+                set: function() {
+                    this.$store.state.rejected_efile_list.rejectedEfileList.total
+                }
+            },
+
+            rejectedEfileTotalPages :{
+                // return this.$store.state.rejected_efile_list.rejectedEfileList.total
+                get: function () {
+                   return this.$store.state.rejected_efile_list.rejectedEfileList.pages
+                },
+                set: function() {
+                    this.$store.state.rejected_efile_list.rejectedEfileList.pages
+                }
+            }
+
+
         },//computed
 
         methods:{
@@ -313,19 +294,20 @@
             firstPage(){
                 this.toggleLoader()
 
-                this.pendingEfilePageNo = 1
-                
+                this.rejectedEfilePageNo = 1
+
                 const config = {
                     method: 'GET',
-                    url: `${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}?page=${this.pendingEfilePageNo}`,
+                    url: `${keys.BASE_URL}/api/v1/efiles/rejected/${this.$store.state.user_details.user._id}?page=${this.rejectedEfilePageNo}`,
                     headers:{
                         "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                     }
                 }
 
+
                 axios(config)
                     .then( res =>  {
-                        this.pendingEfileList = res.data 
+                        this.$store.dispatch('rejected_efile_list/STORE_REJECTED_EFILE_LIST', res.data)
                         this.toggleLoader()
                     })
                     .catch( err => {
@@ -337,11 +319,12 @@
             lastPage(){
                 this.toggleLoader()
 
-                this.pendingEfilePageNo = this.pendingEfileTotalPageNo
+                this.rejectedEfilePageNo = this.rejectedEfileTotalPages
+
 
                 const config = {
                     method: 'GET',
-                    url: `${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}?page=${this.pendingEfilePageNo}`,
+                    url: `${keys.BASE_URL}/api/v1/efiles/rejected/${this.$store.state.user_details.user._id}?page=${this.rejectedEfilePageNo}`,
                     headers:{
                         "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                     }
@@ -349,7 +332,7 @@
 
                 axios(config)
                     .then( res =>  {
-                        this.pendingEfileList = res.data 
+                        this.$store.dispatch('rejected_efile_list/STORE_REJECTED_EFILE_LIST', res.data)
                         this.toggleLoader()
                     })
                     .catch( err => {
@@ -361,11 +344,11 @@
             nextPage(){
                 this.toggleLoader()
 
-                this.pendingEfilePageNo += 1
+                this.rejectedEfilePageNo += 1
 
                 const config = {
                     method: 'GET',
-                    url: `${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}?page=${this.pendingEfilePageNo}`,
+                    url: `${keys.BASE_URL}/api/v1/efiles/rejected/${this.$store.state.user_details.user._id}?page=${this.rejectedEfilePageNo}`,
                     headers:{
                         "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                     }
@@ -375,11 +358,11 @@
                     .then( res =>  {
 
                         if( (res.data.docs).length === 0){
-                            this.pendingEfilePageNo -= 1
+                            this.rejectedEfilePageNo -= 1
                             this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','no more data to display') )
                             this.toggleLoader()
                         }else{
-                            this.pendingEfileList = res.data 
+                            this.$store.dispatch('rejected_efile_list/STORE_REJECTED_EFILE_LIST', res.data)
                             this.toggleLoader()
                         }
                         
@@ -392,15 +375,15 @@
 
             prevPage(){
                 
-                if(this.pendingEfilePageNo === 1){
+                if(this.rejectedEfilePageNo === 1){
                     
                 }else{
-                    this.pendingEfilePageNo -= 1
+                    this.rejectedEfilePageNo -= 1
                     this.toggleLoader()
                     
                     const config = {
                         method: 'GET',
-                        url: `${keys.BASE_URL}/api/v1/efiles/pending/${this.$store.state.user_details.user._id}?page=${this.pendingEfilePageNo}`,
+                        url: `${keys.BASE_URL}/api/v1/efiles/rejected/${this.$store.state.user_details.user._id}?page=${this.rejectedEfilePageNo}`,
                         headers:{
                             "Authorization" : `Bearer ${this.$store.state.user_details.token}`
                         }
@@ -409,7 +392,7 @@
                     axios(config)
                         .then( res => {
                             this.toggleLoader()
-                            this.pendingEfileList = res.data 
+                            this.$store.dispatch('rejected_efile_list/STORE_REJECTED_EFILE_LIST', res.data)
                         })
                         .catch( err => {
                             this.toggleLoader()
@@ -418,122 +401,77 @@
                 }
             },
 
-            toggleRejectModal(){
-                this.isRejectModalActive = !this.isRejectModalActive
+            toggleDeleteModal(){
+                this.isDeleteModalActive = !this.isDeleteModalActive
             },
 
-            toggleApproveModal(){
-                this.isApproveModalActive = !this.isApproveModalActive
+            toggleUpdateModal(){
+                this.isUpdateModalActive = !this.isUpdateModalActive
             },
 
             toggleLoader(){
                 this.isLoaderActive = !this.isLoaderActive
             },
 
-            getEfileDetailsToBeRejected(id, name){
-                this.efileToBeRejectedDetails = {
+            getEfileDetailsToBeDeleted(id, name, rejection_reason){
+                this.efileToBeDeletedDetails = {
                     id : id,
-                    name: name
+                    name: name,
+                    rejection_reason: rejection_reason
                 }
-                this.toggleRejectModal()
+                this.toggleDeleteModal()
             },
 
-            getEfileDetailsToBeApproved(id, name){
-                this.efileToBeApprovedDetails = {
+            getEfileDetailsToBeUpdated(id, name, rejection_reason){
+                this.efileToBeUpdated = {
                     id : id,
-                    name: name
+                    name: name,
+                    rejection_reason: rejection_reason
                 }
-                this.toggleApproveModal()
+                this.toggleUpdateModal()
             },
             
-            updatePendingEfileListOnApprove(idToRemove){
+
+
+            updateRejectedEfileListOnApprove(idToRemove){
+
+                 //make a copy, do not mutate state directly
+                let rejectedEfileList = _.cloneDeep(this.rejectedEfileList) 
                 //find index by id on the list
-                let indexToSplice = _.findIndex( this.pendingEfileList.docs , { '_id' :  String(idToRemove) } )
-                //remove data from pendingEfileList
-                this.pendingEfileList.docs.splice(indexToSplice, 1)
+                let indexToSplice = _.findIndex( rejectedEfileList , { '_id' : String(idToRemove) } )
+                //remove data from rejectedEfileList
+                rejectedEfileList.docs.splice(indexToSplice, 1)
+                // minus the total data
+                rejectedEfileList.total -= 1
+
+                this.$store.dispatch('rejected_efile_list/STORE_REJECTED_EFILE_LIST', rejectedEfileList)
+
             },
 
-            approveEfile(){
+            deleteEfile(){
                 this.toggleLoader()
-                
-                const body =  {
-                    name:{
-                        first_name : this.$store.state.user_details.user.name.first_name,
-                        middle_name : this.$store.state.user_details.user.name.middle_name,
-                        last_name : this.$store.state.user_details.user.name.last_name,
-                    },
-                    position: this.$store.state.user_details.user.position,
-                    signature:  this.$store.state.user_details.user.signature
-                }
 
                 const config = {
-                    method: 'PUT',
-                    url: `${keys.BASE_URL}/api/v1/efiles/approve/${this.efileToBeApprovedDetails.id}`,
-                    data : JSON.stringify(body),
+                    method: 'DELETE',
+                    url: `${keys.BASE_URL}/api/v1/efiles/${this.efileToBeDeletedDetails.id}`,
                     headers:{
-                         "Content-Type": "application/json",
+                        //  "Content-Type": "application/json",
                          "Authorization" : `Bearer ${this.$store.state.user_details.token}`
+                        }
                     }
-                       
-                }
 
                 axios(config)
                     .then( res =>  {
-                        this.updatePendingEfileListOnApprove(this.efileToBeApprovedDetails.id)
+                        this.updateRejectedEfileListOnApprove(this.efileToBeDeletedDetails.id)
                         this.toggleLoader()
-                        this.toggleApproveModal()
-                        this.$notify( this.showNotif('success', 'Success', 'fa-check-circle', `efile was approved & sign`) )
+                        this.toggleDeleteModal()
+                        this.$notify( this.showNotif('success', 'Success', 'fa-check-circle', `efile successfully deleted`) )
                     })
                     .catch( err => {
                         this.toggleLoader()
-                        this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+                        this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response))
                     })
 
-            },
-
-            rejectEfile(){
-                this.toggleLoader()
-
-                const body =  {
-                    rejected_recipient:{
-                        id: this.getUserDetails.id,
-                        name: this.getUserDetails.full_name
-                    },
-                    rejection_reason:  this.rejection_reason
-                }
-
-                alert(JSON.stringify(body))
-                const config = {
-                    method: 'PUT',
-                    url: `${keys.BASE_URL}/api/v1/efiles/${this.efileToBeRejectedDetails.id}`,
-                    data : JSON.stringify(body),
-                    headers:{
-                         "Content-Type": "application/json",
-                         "Authorization" : `Bearer ${this.$store.state.user_details.token}`
-                    }
-                       
-                }
-
-                axios(config)
-                    .then( res =>  {
-                        this.updatePendingEfileListOnApprove(this.efileToBeRejectedDetails.id)
-                        this.toggleLoader()
-                        this.toggleRejectModal()
-                        this.$notify( this.showNotif('success', 'Success', 'fa-check-circle', `efile was rejected, notifying the sender`) )
-                    })
-                    .catch( err => {
-                        this.toggleLoader()
-                        this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
-                       
-                    })
-            },
-
-            validateRejectionReason(){
-                if(this.rejection_reason.length === 0  || this.rejection_reason === null || /^\s*$/.test(this.rejection_reason)){
-                    this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','write a valid reason to reject this efile') )
-                }else{
-                    this.rejectEfile()
-                }
             },
 
         }

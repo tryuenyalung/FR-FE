@@ -21,7 +21,7 @@
                     </a>
                 </li>
 
-                <li @click="changeActiveTab('for publishing')" :class="{'is-active' : activeTab === 'for publishing' }">
+                <li @click="changeActiveTab('rejected efile')" :class="{'is-active' : activeTab === 'rejected efile' }">
                     <a>
                         <p v-if="rejectedEfile > 0">
                             <span class="tag is-danger"><p class="title is-6 has-text-white">{{this.rejectedEfile}}</p></span>
@@ -33,13 +33,13 @@
 
                 <li @click="changeActiveTab('approved')" :class="{'is-active' : activeTab === 'approved' }">
                     <a>
-                        <span>Approved</span>
+                        <span>Private Efile</span>
                     </a>
                 </li>
 
                 <li @click="changeActiveTab('rejected')" :class="{'is-active' : activeTab === 'rejected' }">
                     <a>
-                        <span>Rejected</span>
+                        <span>Public Efile</span>
                     </a>
                 </li>
 
@@ -50,7 +50,7 @@
         <createEfile v-if="activeTab === 'create efile' "/>
         <approved  v-if="activeTab === 'approved' "/>
         <forApproval  v-if="activeTab === 'for approval' " />
-        <forPublishing  v-if="activeTab === 'for publishing' "/>
+        <rejectedEfileTab  v-if="activeTab === 'rejected efile' "/>
 
 
 
@@ -61,7 +61,7 @@
     import createEfile from './createEfileTab'
     import approved from './approvedTab'
     import forApproval from './forApprovalTab'
-    import forPublishing from './forPublishingTab'
+    import rejectedEfileTab from './rejectedEfileTab'
 
     export default {
 
@@ -69,7 +69,7 @@
             createEfile,
             approved,
             forApproval,
-            forPublishing 
+            rejectedEfileTab
         },//components
 
         data(){
