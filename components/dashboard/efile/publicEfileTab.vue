@@ -1,5 +1,28 @@
 <template><div>
 
+    <!--search input-->
+        <div class="field has-addons has-addons-centered">
+            <p class="control is-expanded">
+                <input @keypress.enter="searchPublicEfile" v-model="publishedEfileSearchInput" class="input " type="text" placeholder="Search efile...">
+            </p>
+                        
+            <p class="control">
+                <span class="select">
+                    <!--checking by the value of the option-->
+                    <select v-model="publicEfileSearchBy">
+                        <option>Name</option>
+                        <option>Sender</option>
+                        <option>Recipients</option>
+                        <option>Date Created</option>
+                    </select>
+                </span>
+            </p>
+
+            <p class="control">
+                <button @click="searchPublicEfile" class="button is-danger is-outlined fa fa-search"></button>
+            </p>
+        </div>
+
     <!--table-->
         <div class="table-container">
             <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth ">
@@ -9,10 +32,8 @@
                     <th>Efile Name</th>
                     <th>Sender</th>
                     <th>Recipients</th>
-                    <th>Pending for Approval</th>
-                    <th>Approved Recipients</th>
                     <th>Date Created</th>
-                    <th class="has-text-centered" colspan="3">Action</th>
+                    <th class="has-text-centered">Action</th>
                 </tr>
             </thead>
 
@@ -25,18 +46,6 @@
                     <td>
                         <span v-for="recipient in efile.recipient" :key="'r'+recipient.id">
                             {{recipient.name}},&nbsp;
-                        </span>
-                    </td>
-
-                    <td>
-                        <span v-for="pending_recipient in efile.pending_recipient" :key="'p'+pending_recipient.id">
-                            {{pending_recipient.name}},&nbsp;
-                        </span>
-                    </td>
-
-                    <td>
-                        <span v-for="approved_recipient in efile.approved_recipient" :key="'a'+approved_recipient.id">
-                            {{approved_recipient.name}},&nbsp;
                         </span>
                     </td>
 
@@ -148,6 +157,8 @@
                 publicEfileList: [],
                 publicEfilePageNo : 1,
                 publicEfileTotalPageNo : 0,
+                publishedEfileSearchInput: '',
+                publicEfileSearchBy: "Name",
 
             }//return
         },//data
@@ -277,6 +288,48 @@
 
             toggleLoader(){
                 this.isLoaderActive = !this.isLoaderActive
+            },
+
+            searchPublicEfile(){
+                this.toggleLoader()
+
+                let queryString = ''
+
+                if(this.publicEfileSearchBy === 'Name'){
+                    queryString = `name=${this.publishedEfileSearchInput}`
+                }
+                else if(this.publicEfileSearchBy === 'Sender'){
+                    queryString = `sender=${this.publishedEfileSearchInput}`
+                }
+                else if(this.publicEfileSearchBy === 'Recipients'){
+                    queryString = `recipient=${this.publishedEfileSearchInput}`
+                }
+                else if(this.publicEfileSearchBy === 'Date Created'){
+                    queryString = `createdAt=${this.publishedEfileSearchInput}`
+                }
+                else{
+                    queryString = ''
+                }
+
+                const config = {
+                    method: 'GET',
+                    url: `${keys.BASE_URL}/api/v1/efiles/published/public?${queryString}`,
+                    headers: {
+                    "Authorization": `Bearer ${this.$store.state.user_details.token}`
+                    }
+
+                }
+
+                axios(config)
+                    .then(res => {
+                        this.publicEfileList = res.data
+                        this.publicEfileTotalPageNo = res.data.pages
+                        this.toggleLoader()
+                    })
+                    .catch(err => {
+                        this.toggleLoader()
+                        alert(err)
+                    })
             },
 
             

@@ -225,8 +225,10 @@
 
             validateEfileContent(){
                 console.log(this.efileContent);
-                (this.efileContent !== null || this.efileContent.length === 0 ||  /^\s*$/.test(this.efileContent) ) ? this.toggleRecipientModal()
-                : this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','empty content is not allowed') )
+                (this.efileContent === null ||  this.efileContent.length === 0 ||  /^\s*$/.test(this.efileContent) )
+                 ? this.$notify( this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','empty content is not allowed') ) 
+                 : this.toggleRecipientModal()
+                 
             },
 
             toggleRecipientModal(){
