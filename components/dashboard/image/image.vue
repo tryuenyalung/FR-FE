@@ -25,8 +25,10 @@
                 <span class="file-name">
                   {{this.imageUploadFileName}}
                 </span>
-                <span><br>
-                 <input v-model="image_tag" class="is-fullwidth input has-background-white-ter" type="text" name="image_tag"  placeholder="add image tag..">
+                <span>
+                  <br>
+                  <input @keydown.enter.prevent v-model="image_tag" class="is-fullwidth input has-background-white-ter" type="text" name="image_tag"
+                    placeholder="add image tag..">
                 </span>
               </label>
 
@@ -48,29 +50,34 @@
     </div>
     <!-- end of modal upload -->
 
+    <div class="modal" :class="{'is-active': this.isDeleteImageModalActive}">
+      <div @click="toggleDeleteImageModal" class="modal-background" />
+
+      <div class="modal-content">
+        <div class="box">
+
+          <h4 class="subtitle is-4 has-text-centered">Are you sure you want to delete this image?</h4>
+
+          <img :src="`${this.imageToBeDeleted.url}`" alt="">
+          <div>
+            <button @click="deleteImage()" class="button is-danger is-pulled-right is-outlined">Delete</button>
+            <br>
+          </div>
+
+
+        </div>
+      </div>
+
+    </div>
+    <!-- end of modal delete -->
+
     <div class="section">
-
-
-
 
       <!--search input-->
       <div class="field has-addons has-addons-centered">
         <p class="control is-expanded">
-          <input v-model="imageSearchInput" class="input is-medium" type="text" placeholder="Search images...">
+          <input @keydown.enter="searchImage" v-model="imageSearchInput" class="input is-medium" type="text" placeholder="Search images...">
         </p>
-
-        <p class="control">
-          <span class="select is-medium">
-
-            <!--checking by the value of the option-->
-            <select v-model="imageSearchBy">
-              <option>ID</option>
-              <option>Name</option>
-              <option>Type</option>
-            </select>
-
-          </span>
-        </p>&nbsp;&nbsp;
 
         <p class="control">
           <button @click="toggleUploadImageModal()" class="button is-danger is-pulled-right fas fa-cloud-upload-alt is-medium" />
@@ -80,30 +87,32 @@
       <!--image box-->
 
 
-      <div class="columns" v-for="images in chunkedUserImageData" :key="images.id">
-        <div class="column is-one-quarter" v-for="image in images" :key="image.id">
+      <div class="columns" v-for="images in chunkedUserImageData" :key="images._id">
+        <div class="column is-one-quarter" v-for="image in images" :key="image._id">
 
           <div class="card">
 
             <div class="padding is-10">
               <span class="subtitle is-5">
-                <b>{{image.name}}</b>
+                <b class="is-size-6">{{image.metadata.image_tag}}</b>
               </span>
               <br>
               <span class=" is-pulled-right tag is-danger">
-                <b>2 mb</b>
+                <b> {{ byteToMb(image.length) }} mb</b>
               </span>&nbsp;
             </div>
 
             <div class="card-image">
               <figure class="image is-5by4">
-                <img :src="image.image" alt="Placeholder image">
+                <img :src="`${API_IMAGE}${image.filename}`" alt="Placeholder image">
               </figure>
             </div>
 
             <footer class="card-footer">
-              <a href="#" class="card-footer-item fas fa-trash-alt" />
-              <a href="#" class="card-footer-item fas fa-copy" />
+              <a @click="getImageDetailsToBeDeleted(`${image.filename}`, `${API_IMAGE}${image.filename}`)" class="card-footer-item fas fa-trash-alt"
+              />
+              <a @click="copyToClipBoard(`${API_IMAGE}${image.filename}`)" class="card-footer-item fas fa-copy" />
+              <a target="_blank" :href="`${API_IMAGE}${image.filename}`" class="card-footer-item fas fa-external-link-alt" />
             </footer>
 
           </div>
@@ -113,6 +122,46 @@
 
 
 
+      <div class="level">
+
+        <div class="level-item">
+          <div class="field has-addons">
+            <p class="control">
+              <a class="button" @click="firstPage"> First </a>
+            </p>
+
+            <p class="control">
+              <a class="button" @click="lastPage"> Last </a>
+            </p>
+          </div>
+        </div>
+
+
+        <div class="level-item">
+          <div class="field has-addons">
+            <p class="control">
+              <a class="button is-static"> Page: 1 </a>
+            </p>
+
+            <p class="control">
+              <a class="button is-static"> Total: {{imageListTotalNo}} </a>
+            </p>
+          </div>
+        </div>
+
+
+        <div class="level-item">
+          <div class="field has-addons">
+            <p class="control">
+              <a class="button" @click="prevPage"> Previous </a>
+            </p>
+
+            <p class="control">
+              <a class="button" @click="nextPage"> Next </a>
+            </p>
+          </div>
+        </div>
+      </div>
 
 
 
@@ -135,173 +184,77 @@
 
   export default {
 
+    mounted() {
+      this.toggleLoader()
+
+      const config = {
+        method: 'GET',
+        url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}`,
+        headers: {
+          "Authorization": `Bearer ${this.$store.state.user_details.token}`
+        }
+
+      }
+
+      axios(config)
+        .then(res => {
+          this.imageList = res.data.docs
+          this.imageListTotalPageNo = res.data.pages
+          this.imageListTotalNo = res.data.total
+          this.toggleLoader()
+          console.log(this.imageList)
+        })
+        .catch(err => {
+          this.toggleLoader()
+          alert(err)
+        })
+
+
+
+    },
+
     components: {
       loader
     }, //components
 
+
     data() {
       return {
+        API_IMAGE: `${keys.BASE_URL}${keys.API_IMAGE}/`,
+
         updateModalState: false,
         imageSearchInput: "",
-        selected: "",
-        imageSearchBy: "ID",
 
-        image_tag: null,
+        image_tag: '',
         isLoaderActive: false,
         isUploadImageModalActive: false,
-        imageUploadFileName: null,
+        isDeleteImageModalActive: false,
+        imageUploadFileName: '',
 
-        userImageData: [{
-            id: "a56ab46d-ce83-4830-96a0-58161fb5a217",
-            name: "nunc_vestibulum.tiff",
-            type: "image/x-tiff",
-            size: "134.10.65.238",
-            image: "http://dummyimage.com/600x480.jpg/dddddd/000000"
-          },
-          {
-            id: "87fe2fa5-140c-481e-993a-3c5a71f30b9b",
-            name: "vitae.tiff",
-            type: "image/tiff",
-            size: "170.209.107.11",
-            image: "http://dummyimage.com/600x480.jpg/ff4444/ffffff"
-          },
-          {
-            id: "51896d4a-d06d-41f3-894d-5d5e64a0e8c2",
-            name: "cursus.gif",
-            type: "image/gif",
-            size: "172.138.202.221",
-            image: "http://dummyimage.com/600x480.png/cc0000/ffffff"
-          },
-          {
-            id: "48aad398-5ca6-4d57-bc5f-6b203819c651",
-            name: "in_blandit.png",
-            type: "image/png",
-            size: "171.92.231.86",
-            image: "http://dummyimage.com/600x480.jpg/cc0000/ffffff"
-          },
-          {
-            id: "9c7385c5-3560-4522-8832-46a032fdac6a",
-            name: "elit_ac.tiff",
-            type: "image/x-tiff",
-            size: "246.200.220.118",
-            image: "http://dummyimage.com/600x480.png/ff4444/ffffff"
-          },
-          {
-            id: "2c373edb-c69c-4c7f-bb34-6b01854014c9",
-            name: "congue.gif",
-            type: "image/gif",
-            size: "190.177.10.225",
-            image: "http://dummyimage.com/600x480.bmp/dddddd/000000"
-          },
-          {
-            id: "6fc541de-ab14-43c6-be9b-53e2d35fae47",
-            name: "ipsum.tiff",
-            type: "image/tiff",
-            size: "11.45.66.243",
-            image: "http://dummyimage.com/600x480.png/dddddd/000000"
-          },
-          {
-            id: "5ac76043-57db-4eb3-8fed-c4dcdabe0200",
-            name: "quam_nec.jpeg",
-            type: "image/pjpeg",
-            size: "57.207.58.116",
-            image: "http://dummyimage.com/600x480.jpg/dddddd/000000"
-          },
-          {
-            id: "39f189ec-7e37-468b-9108-22bca5c5ffc9",
-            name: "convallis_nulla.jpeg",
-            type: "image/jpeg",
-            size: "42.125.225.157",
-            image: "http://dummyimage.com/600x480.jpg/cc0000/ffffff"
-          },
-          {
-            id: "f5ba7544-bac9-40a3-83b7-205964efa6e3",
-            name: "magna.png",
-            type: "image/png",
-            size: "75.114.176.232",
-            image: "http://dummyimage.com/600x480.bmp/cc0000/ffffff"
-          },
-          {
-            id: "e2b7d3e8-c1b6-4c37-8245-1e7c9fecf715",
-            name: "tristique.jpeg",
-            type: "image/pjpeg",
-            size: "147.64.175.164",
-            image: "http://dummyimage.com/600x480.bmp/cc0000/ffffff"
-          },
-          {
-            id: "c7c2d929-533b-4889-b57d-2afaa3ef32ba",
-            name: "ornare.jpeg",
-            type: "image/pjpeg",
-            size: "166.35.193.0",
-            image: "http://dummyimage.com/600x480.bmp/5fa2dd/ffffff"
-          },
-          {
-            id: "dce7b015-af35-420b-9636-f31ca3abd559",
-            name: "id_justo.gif",
-            type: "image/gif",
-            size: "135.90.126.253",
-            image: "http://dummyimage.com/600x480.png/5fa2dd/ffffff"
-          },
-          {
-            id: "fbc83b6b-f65f-46bf-bdad-d955ee44d20f",
-            name: "nulla.png",
-            type: "image/png",
-            size: "189.136.68.129",
-            image: "http://dummyimage.com/600x480.bmp/5fa2dd/ffffff"
-          },
-          {
-            id: "8cce6aac-8ab5-49bf-9229-396d984ab6a6",
-            name: "consequat_varius.jpeg",
-            type: "image/jpeg",
-            size: "125.194.131.130",
-            image: "http://dummyimage.com/600x480.png/ff4444/ffffff"
-          },
-          {
-            id: "b52b40f2-6c7a-4326-8a88-fff09873b1f2",
-            name: "vel.jpeg",
-            type: "image/jpeg",
-            size: "153.209.36.41",
-            image: "http://dummyimage.com/600x480.png/ff4444/ffffff"
-          },
-          {
-            id: "cb6a0518-bd3c-4e80-8253-2a69329bca0b",
-            name: "in_felis_eu.jpeg",
-            type: "image/pjpeg",
-            size: "66.25.109.83",
-            image: "http://dummyimage.com/600x480.png/5fa2dd/ffffff"
-          },
-          {
-            id: "c31bd6fe-6034-45d5-9f1a-5a6fc393a7d2",
-            name: "imperdiet_et_commodo.tiff",
-            type: "image/tiff",
-            size: "127.173.112.109",
-            image: "http://dummyimage.com/600x480.bmp/cc0000/ffffff"
-          },
-          {
-            id: "045aaab2-c7e6-41ea-8471-7795b4af255f",
-            name: "vivamus_vestibulum.tiff",
-            type: "image/x-tiff",
-            size: "133.145.216.79",
-            image: "http://dummyimage.com/600x480.jpg/5fa2dd/ffffff"
-          },
-          {
-            id: "e7472dcd-84ba-4300-b313-1abdcbfaac7f",
-            name: "potenti.jpeg",
-            type: "image/jpeg",
-            size: "36.204.65.205",
-            image: "http://dummyimage.com/600x480.bmp/ff4444/ffffff"
-          }
-        ]
-      }; //return
+        imageList: [],
+        imageListTotalPageNo: 0,
+        imageListTotalNo: 0,
+        imagePageNo: 1,
+
+        imageToBeDeleted: {}
+
+      } //return
     }, //data
 
     computed: {
       chunkedUserImageData() {
-        return _.chunk(this.userImageData, 4);
-      }
+        return _.chunk(this.imageList, 4);
+      },
+
+
+
     }, //computed
 
     methods: {
+      byteToMb: function (byte) {
+        let mb = byte * 0.000001
+        return _.ceil(mb, 2)
+      },
 
       showNotif(type, title, icon, msg) {
         return {
@@ -318,31 +271,152 @@
       toggleUploadImageModal() {
         this.isUploadImageModalActive = !this.isUploadImageModalActive
       },
+      toggleDeleteImageModal() {
+        this.isDeleteImageModalActive = !this.isDeleteImageModalActive
+      },
+
+      getImageDetailsToBeDeleted(filename, url) {
+        this.imageToBeDeleted = {
+          filename: filename,
+          url: url
+        }
+        this.toggleDeleteImageModal()
+      },
+
+      firstPage() {
+        this.toggleLoader()
+
+        this.imagePageNo = 1
+
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.imagePageNo}&tag=${this.imageSearchInput}`,
+          headers: {
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`
+          }
+        }
+
+        axios(config)
+          .then(res => {
+            this.imageList = res.data.docs
+            this.toggleLoader()
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err))
+          })
+      },
+
+      lastPage() {
+        this.toggleLoader()
+
+        this.imagePageNo = this.imageListTotalPageNo
+
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.imagePageNo}&tag=${this.imageSearchInput}`,
+          headers: {
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`
+          }
+        }
+
+        axios(config)
+          .then(res => {
+            this.imageList = res.data.docs
+            this.toggleLoader()
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err))
+          })
+      },
+
+      nextPage() {
+        this.toggleLoader()
+
+        this.imagePageNo += 1
+
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.imagePageNo}&tag=${this.imageSearchInput}`,
+          headers: {
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`
+          }
+        }
+
+        axios(config)
+          .then(res => {
+
+            if ((res.data.docs).length === 0) {
+              this.imagePageNo -= 1
+              this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', 'no more data to display'))
+              this.toggleLoader()
+            } else {
+              this.imageList = res.data.docs
+              this.toggleLoader()
+            }
+
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err))
+          })
+      },
+
+      prevPage() {
+
+        if (this.imagePageNo === 1) {
+
+        } else {
+          this.imagePageNo -= 1
+          this.toggleLoader()
+
+          const config = {
+            method: 'GET',
+            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.imagePageNo}&tag=${this.imageSearchInput}`,
+            headers: {
+              "Authorization": `Bearer ${this.$store.state.user_details.token}`
+            }
+          }
+
+          axios(config)
+            .then(res => {
+              this.toggleLoader()
+              this.imageList = res.data.docs
+            })
+            .catch(err => {
+              this.toggleLoader()
+              this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err))
+            })
+        }
+      },
+
       displayImageInfoOnForm() {
         this.imageUploadFileName = this.$refs.inputImage.value
       },
 
       validateUploadImageForm() {
-        this.imageUploadFileName === null || this.imageUploadFileName === '' && this.image_tag === null || this.image_tag === '' ?
-        this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle','Please choose an image to upload and add image tag..') ):
-        this.updateImage() 
-       
+
+        if (!_.isEmpty(this.imageUploadFileName) && !_.isEmpty(this.image_tag)) {
+          this.uploadImage()
+        } else {
+          this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',
+            'Please choose an image to upload and add image tag..'))
+        }
+
       },
 
-      updateImage() {
+      uploadImage() {
         this.toggleLoader()
-
         let formData = new FormData(uploadImageForm) //new FormData(formNameHere)
 
         const config = {
           method: 'POST',
-          url: `${keys.BASE_URL}/api/v1/files`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.image_tag}`,
           data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
             "Authorization": `Bearer ${this.$store.state.user_details.token}`,
-            "bucket": keys.BUCKET_IMAGE,
-            "owner_id": `${this.$store.state.user_details.user._id}`
           }
         }
 
@@ -351,16 +425,75 @@
             this.toggleLoader()
             this.toggleUploadImageModal()
             this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully upload..'))
-            this.imageUploadFileName = null
+            this.imageUploadFileName = ''
+            this.image_tag = ''
           })
           .catch(err => {
             this.toggleLoader()
             this.toggleUploadImageModal()
             this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
-            this.imageUploadFileName = null
+            this.imageUploadFileName = ''
+            this.image_tag = ''
           })
 
       },
+
+      searchImage() {
+        this.toggleLoader()
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.imageSearchInput}`,
+          headers: {
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`
+          }
+        }
+
+        axios(config)
+          .then(res => {
+            this.toggleLoader()
+            this.imageList = res.data.docs
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err))
+          })
+      },
+
+      deleteImage() {
+        this.toggleLoader()
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_IMAGE}&filename=${this.imageToBeDeleted.filename}`,
+          headers: {
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`
+          }
+        }
+
+        axios(config)
+          .then(res => {
+            this.toggleLoader()
+            this.searchImage()
+            this.toggleDeleteImageModal()
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err))
+            this.toggleDeleteImageModal()
+          })
+      },
+
+      copyToClipBoard(stringToCopy) {
+        let textArea = document.createElement("textarea")
+        textArea.value = stringToCopy
+        // textArea.class = "is-hidden"
+        document.body.appendChild(textArea)
+        textArea.select()
+        document.execCommand('copy')
+        textArea.parentNode.removeChild(textArea)
+
+        this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Path copy to clipboard..'))
+
+      }
 
 
     }

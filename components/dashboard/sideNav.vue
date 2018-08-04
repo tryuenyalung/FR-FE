@@ -7,7 +7,7 @@
 
             <figure :class="'avatar has-text-centered'">
                 <img v-if="this.$store.state.user_details.user.avatar === null" :src="`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF1zJt89f-BE-BEriCrVlTfXhOKdTnVzo-CdfbL4S9aC4gzA03`" >
-                <img v-if="this.$store.state.user_details.user.avatar !== null" :src="`${this.API_PROFILE}${this.$store.state.user_details.user.avatar}`" >
+                <img v-if="this.$store.state.user_details.user.avatar !== null" :src="`${API_PROFILE}${this.$store.state.user_details.user.avatar}`" >
             </figure>
 
             <aside class="menu">
