@@ -14,7 +14,7 @@
                 <form id="updateAvatarForm">
 
                     <label class="file-label">
-                        <input class="file-input" type="file" name="file" ref="inputImage" v-on:change="displayImageInfoOnForm">
+                        <input class="file-input" type="file" name="file" ref="inputImage" v-on:change="displayImageInfoOnForm" accept="image/png, image/jpeg">
                         <span class="file-cta">
                         <span class="file-icon">
                             <i class="fas fa-upload"></i>
@@ -105,7 +105,8 @@
                     
                 <div class="column is-one-fifth">
                     <figure class="avatar has-text-centered image is-1by1 ">
-                        <img :src=" this.$store.state.user_details.user.avatar" >
+                        <img v-if="this.$store.state.user_details.user.avatar === null" :src="`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF1zJt89f-BE-BEriCrVlTfXhOKdTnVzo-CdfbL4S9aC4gzA03`" >
+                        <img v-if="this.$store.state.user_details.user.avatar !== null" :src="`${this.API_PROFILE}${this.$store.state.user_details.user.avatar}`" >
                     </figure>
                     <button @click="toggleUpdateImageModal" class="button fas fa-camera-retro fa-lg is-danger is-outlined is-fullwidth"></button> 
                 </div>
@@ -256,7 +257,7 @@
             <div class="columns">
                 <div class="column is-offset-10 is-2">
                     <figure class="avatar has-text-centered image is-1by1 ">
-                        <img :src=" this.$store.state.user_details.user.signature" >
+                        <img :src="`${this.API_SIGNATURE}${this.$store.state.user_details.user.signature}`" >
                     </figure>
                 </div>
             </div>
@@ -283,6 +284,9 @@
 
         data(){
             return{
+                API_SIGNATURE: `${keys.BASE_URL}${keys.API_SIGNATURE}/`,
+                API_PROFILE: `${keys.BASE_URL}${keys.API_PROFILE}/`,
+
                 isLoaderActive : false,
                 isUpdatePasswordModalActive: false,
                 isUpdateImageModalActive: false,
@@ -427,7 +431,9 @@
                     data: formData,
                     headers: { 
                         "Content-Type": "multipart/form-data",
-                        "Authorization" : `Bearer ${this.$store.state.user_details.token}`
+                        "Authorization" : `Bearer ${this.$store.state.user_details.token}`,
+                        "bucket" : keys.BUCKET_PROFILE,
+                        "owner_id" : `${this.$store.state.user_details.user._id}`
                     }
                 }
 
@@ -444,15 +450,14 @@
             },
 
             updateAvatarUrlOnUser(filename){
-                let avatarUrl = `${keys.BASE_URL}/api/v1/files/${filename}` 
 
-                this.$store.dispatch('user_details/UPDATE_USER_AVATAR', {avatar : avatarUrl})
+                this.$store.dispatch('user_details/UPDATE_USER_AVATAR', {avatar : filename})
                     
                 const config = {
                     method: 'PUT',
                     url: `${keys.BASE_URL}/api/v1/users/${this.$store.state.user_details.user._id}`,
                     data: {
-                        "avatar": avatarUrl
+                        "avatar": filename
                     },
                     headers: { 
                         "Content-Type": "application/json",

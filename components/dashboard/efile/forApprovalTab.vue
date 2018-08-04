@@ -489,6 +489,8 @@
                         this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
                     })
 
+                this.decrementPendingEfileNotif()
+
             },
 
             rejectEfile(){
@@ -502,7 +504,6 @@
                     rejection_reason:  this.rejection_reason
                 }
 
-                alert(JSON.stringify(body))
                 const config = {
                     method: 'PUT',
                     url: `${keys.BASE_URL}/api/v1/efiles/${this.efileToBeRejectedDetails.id}`,
@@ -526,6 +527,8 @@
                         this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
                        
                     })
+                
+                this.decrementPendingEfileNotif()
             },
 
             validateRejectionReason(){
@@ -535,6 +538,13 @@
                     this.rejectEfile()
                 }
             },
+
+            decrementPendingEfileNotif(){
+                let pendingEfileNotif =  this.$store.state.efile_notification.pendingEfileNotif
+                if(pendingEfileNotif > 0){
+                    this.$store.dispatch('efile_notification/GET_PENDING_EFILE_NOTIFICATION', pendingEfileNotif - 1)
+                }
+            }
 
         }
     }

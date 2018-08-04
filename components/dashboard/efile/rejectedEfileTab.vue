@@ -445,7 +445,7 @@
                 rejectedEfileList.total -= 1
 
                 this.$store.dispatch('rejected_efile_list/STORE_REJECTED_EFILE_LIST', rejectedEfileList)
-
+                
             },
 
             deleteEfile(){
@@ -471,8 +471,15 @@
                         this.toggleLoader()
                         this.$notify( this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response))
                     })
-
+                this.decrementRejectedEfileNotif()
             },
+
+            decrementRejectedEfileNotif(){
+                let rejectedEfileNotif =  this.$store.state.efile_notification.rejectedEfileNotif
+                if(rejectedEfileNotif > 0){
+                    this.$store.dispatch('efile_notification/GET_REJECTED_EFILE_NOTIFICATION', rejectedEfileNotif - 1)
+                }
+            }
 
         }
     }

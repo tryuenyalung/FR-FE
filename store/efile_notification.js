@@ -1,21 +1,33 @@
-// const CHANGE_ACTIVE_CONTENT = 'CHANGE_ACTIVE_CONTENT'
+const GET_REJECTED_EFILE_NOTIFICATION = 'GET_REJECTED_EFILE_NOTIFICATION'
+const GET_PENDING_EFILE_NOTIFICATION = 'GET_PENDING_EFILE_NOTIFICATION'
 
 export const state = () => ({
-    rejectedEfile : 10,
-    pendingEfile: 0
+    rejectedEfileNotif : 0,
+    pendingEfileNotif : 0,
 })
 
-// export const mutations = {
 
-//     [CHANGE_ACTIVE_CONTENT] : (state, content)  => {
-//         state.activeContent = content
-//     }
-// }
+export const mutations = {
 
-// export const actions = {
+    [GET_REJECTED_EFILE_NOTIFICATION] : (state, payload)  => {
+        state.rejectedEfileNotif = payload
+    },
+    [GET_PENDING_EFILE_NOTIFICATION] : (state, payload)  => {
+        state.pendingEfileNotif = payload
+    },
 
-//     [CHANGE_ACTIVE_CONTENT] : (context, content) =>  {
-//         //fire the method on mutation CHANGE_ACTIVE_CONTENT, with the argument of content
-//         context.commit(CHANGE_ACTIVE_CONTENT, content)
-//     }
-// }
+}
+
+export const actions = {
+
+    [GET_REJECTED_EFILE_NOTIFICATION] : (context, payload) =>  {
+        //fire the method on mutation STORE_USER_DETAILS , with the argument of content
+        context.commit(GET_REJECTED_EFILE_NOTIFICATION, payload)
+    },
+
+    [GET_PENDING_EFILE_NOTIFICATION] : (context, payload) =>  {
+        //fire the method on mutation STORE_USER_DETAILS , with the argument of content
+        context.commit(GET_PENDING_EFILE_NOTIFICATION, payload)
+    },
+    
+}

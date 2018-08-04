@@ -54,7 +54,7 @@
             }else{
                 axios(config)
                     .then(res => {
-                        this.content = unescape(res.data.content)
+                        this.content = this.renderContent(res.data)
                         setTimeout( () => this.toggleLoader(), 3000)
                     })
                     .catch(err => {
@@ -71,7 +71,7 @@
       
         data(){
             return{
-
+                API_SIGNATURE: `${keys.BASE_URL}${keys.API_SIGNATURE}/`,
                 isLoaderActive: true,
                 content: '',
 
@@ -82,6 +82,26 @@
         }, 
 
         methods: {
+            
+            renderContent(efileData){
+                let efile = efileData
+                let signatures = ''
+                let content = unescape(efileData.content)
+                content = content.substring(0, content.length - 20)
+
+                efileData.signatures.forEach( (x) =>{
+                    signatures += `<span>
+                                        <div style='display:inline-block !important; text-align:center !important; padding-left:6px !important; padding-right:6px !important;'>
+                                            <img src='${this.API_SIGNATURE}${x.signature}' width='150'> <br> ${x.name} <br>${x.position}
+                                        </div>
+                                    <span>`
+                    
+                })
+
+                content = ` ${content}<div style='text-align: center !important'>${signatures}</div></body></html>`
+                return content
+
+            },
 
             showNotif(type, title, icon, msg){
                 return{

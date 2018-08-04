@@ -6,7 +6,8 @@
             <!-- <img class="is-paddingless is-marginless" src="~/assets/images/logo.png" alt="" ><br><br>  -->
 
             <figure :class="'avatar has-text-centered'">
-                <img :src="this.$store.state.user_details.user.avatar" >
+                <img v-if="this.$store.state.user_details.user.avatar === null" :src="`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQF1zJt89f-BE-BEriCrVlTfXhOKdTnVzo-CdfbL4S9aC4gzA03`" >
+                <img v-if="this.$store.state.user_details.user.avatar !== null" :src="`${this.API_PROFILE}${this.$store.state.user_details.user.avatar}`" >
             </figure>
 
             <aside class="menu">
@@ -33,7 +34,7 @@
 </template>
 
 <script>
-
+    import keys from '~/components/keys.js'
 
     export default {
         // beforeCreate(){
@@ -45,7 +46,8 @@
         data(){
 
             return{
-                user_avatar :  localStorage.getItem('user.avatar')
+                user_avatar :  localStorage.getItem('user.avatar'),
+                API_PROFILE: `${keys.BASE_URL}${keys.API_PROFILE}/`,
             }
 
         },//data

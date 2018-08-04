@@ -361,7 +361,9 @@
                     url: `${keys.BASE_URL}/api/v1/files`,
                     data: this.putSignatureToForm(),
                     headers: { 
-                        "Content-Type": "multipart/form-data"
+                        "Content-Type": "multipart/form-data",
+                        "bucket" : keys.BUCKET_SIGNATURE,
+                        "owner_id" : `${this.$store.state.user_details.user._id}`
                     }
                 }
 
@@ -374,7 +376,7 @@
             },
 
             createUserWhenImageUpload(res){
-                const signature = `${keys.BASE_URL}/api/v1/files/${res.data.file.filename}`
+                const signature = `${res.data.file.filename}`
                 let formData = new FormData(registerForm) 
                 formData.append('signature', signature)
 
@@ -400,7 +402,7 @@
                     url: `${keys.BASE_URL}/api/v1/users`,
                     data: JSON.stringify(serializeForm),
                     headers: { 
-                       "Content-Type": "application/json"
+                        "Content-Type": "application/json"
                     }
                 }
 
