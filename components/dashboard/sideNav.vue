@@ -37,11 +37,12 @@
     import keys from '~/components/keys.js'
 
     export default {
-        // beforeCreate(){
-        //     if(localStorage.getItem('jwt') === null ){
-        //         this.$router.push('/')
-        //     }
-        // },
+        
+        created(){
+            if(localStorage.getItem('token') === null ){
+                this.$router.push('/')
+            }
+        },
 
         data(){
 
@@ -59,8 +60,6 @@
             logout(){
                 localStorage.clear()
                 this.$router.push('/')
-
-                // this.$store.commit('logout/clearStoreAndLogout')
             },
              
             changeActiveContent(contentToRender){

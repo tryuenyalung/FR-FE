@@ -51,7 +51,8 @@
                     <td>{{efile.created_at}}</td>
 
                     <td class="has-text-centered">
-                         <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="button is-danger is-outlined">View</a>
+                         <!-- <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="button is-danger is-outlined">View</a> -->
+                         <a :href="`/FR/dashboard/efile/view?id=${efile._id}`" target="_blank" class="button is-danger is-outlined">View</a>
                     </td>
                 </tr>
             </tbody>

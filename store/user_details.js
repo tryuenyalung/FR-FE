@@ -12,9 +12,8 @@ export const mutations = {
 
     [STORE_USER_DETAILS] : (state, payload)  => {
         state.user = payload.user
-        state.token = payload.token
-        console.log(state.user.avatar);
         localStorage.setItem( "token", payload.token )
+        state.token =  localStorage.getItem("token")
         // localStorage.setItem( "user", JSON.stringify(payload.user) )
     },
 

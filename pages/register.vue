@@ -358,12 +358,10 @@
                 this.registrationLoader = true
                 const config = {
                     method: 'POST',
-                    url: `${keys.BASE_URL}/api/v1/files`,
+                    url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_SIGNATURE}`,
                     data: this.putSignatureToForm(),
                     headers: { 
                         "Content-Type": "multipart/form-data",
-                        "bucket" : keys.BUCKET_SIGNATURE,
-                        "owner_id" : `${this.$store.state.user_details.user._id}`
                     }
                 }
 

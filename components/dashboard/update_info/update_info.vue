@@ -255,7 +255,7 @@
             </div><!--columns-->
 
             <div class="columns">
-                <div class="column is-offset-10 is-2">
+                <div class="column is-offset-9 is-3">
                     <figure class="avatar has-text-centered image is-1by1 ">
                         <img :src="`${this.API_SIGNATURE}${this.$store.state.user_details.user.signature}`" >
                     </figure>
