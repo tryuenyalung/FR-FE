@@ -427,13 +427,11 @@
                     
                 const config = {
                     method: 'POST',
-                    url: `${keys.BASE_URL}/api/v1/files`,
+                    url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PROFILE}`,
                     data: formData,
                     headers: { 
                         "Content-Type": "multipart/form-data",
                         "Authorization" : `Bearer ${this.$store.state.user_details.token}`,
-                        "bucket" : keys.BUCKET_PROFILE,
-                        "owner_id" : `${this.$store.state.user_details.user._id}`
                     }
                 }
 

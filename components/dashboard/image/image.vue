@@ -80,7 +80,11 @@
         </p>
 
         <p class="control">
-          <button @click="toggleUploadImageModal()" class="button is-danger is-pulled-right fas fa-cloud-upload-alt is-medium" />
+          <button @click="searchImage" class="button is-danger is-outlined is-pulled-right fas fa-search is-medium" />
+        </p>
+
+        <p class="control">
+          <button @click="toggleUploadImageModal()" class="button is-danger is-outlined is-pulled-right fas fa-cloud-upload-alt is-medium" />
         </p>
       </div>
 
@@ -94,7 +98,7 @@
 
             <div class="padding is-10">
               <span class="subtitle is-5">
-                <b class="is-size-6">{{image.metadata.image_tag}}</b>
+                <b class="is-size-6">{{image.metadata.tag}}</b>
               </span>
               <br>
               <span class=" is-pulled-right tag is-danger">
@@ -424,6 +428,7 @@
           .then(res => {
             this.toggleLoader()
             this.toggleUploadImageModal()
+            this.searchImage()
             this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully upload..'))
             this.imageUploadFileName = ''
             this.image_tag = ''

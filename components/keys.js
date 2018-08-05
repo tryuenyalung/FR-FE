@@ -14,5 +14,8 @@ export default {
 
     "BUCKET_IMAGE" : "image",
     "BUCKET_PROFILE" : "profile",
-    "BUCKET_SIGNATURE" : "signature"
+    "BUCKET_SIGNATURE" : "signature",
+    "BUCKET_PRESENTATION" : "presentation",
+    "BUCKET_SPREADSHEET" : "spreadsheet",
+    "BUCKET_DOCUMENT" : "document",
 }
