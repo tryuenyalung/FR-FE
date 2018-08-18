@@ -501,10 +501,13 @@
 </script>
 
 <style scoped>
-  a {
+  /* a {
     color: #c62828;
-  }
+  } */
 
+a {
+    color: #2e7d32;
+  }
   .padding.is-10 {
     padding: 10px;
   }

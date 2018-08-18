@@ -508,9 +508,13 @@
 
 <style scoped>
   a {
-    color: #c62828;
+    color: #2e7d32;
   }
 
+  /* a {
+    color: #c62828;
+  } */
+  
   .padding.is-10 {
     padding: 10px;
   }

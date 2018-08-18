@@ -24,7 +24,10 @@ $family-serif: 'Roboto Condensed', sans-serif;
 $family-primary: $family-serif;
 
 $cyan: #4054b0;
-$red:  #c62828;
+// $red:  #c62828;
+$red:  #2e7d32;
+
+
 $green: #388e3c;
 $yellow: #ffa726;
 $turquoise: #26a69a;
@@ -32,22 +35,48 @@ $turquoise: #26a69a;
 // 6. Import the rest of Bulma
 @import "./../node_modules/bulma/bulma";
 
-.tab-padding{
-  padding-top: 20px;
-}
+
+
+// .tab-padding{
+//   padding-top: 20px;
+// }
+
+
+// .tabs li.is-active a {
+//   border-bottom-color: #c62828;
+//   color: #c62828;
+// }
+
+// .table-container{
+//   border: 1px solid #c62828;;
+//   border-radius : 3px;
+// }
+
+// .menu-list a.is-active {
+//   background-color: #c62828;
+// }
+
+// .menu-list a:hover {
+//   background-color: #dbdbdb;
+// }
+
+// .menu-list a.is-active:hover {
+//   background-color: #c62828;
+// }
+
 
 .tabs li.is-active a {
-  border-bottom-color: #c62828;
-  color: #c62828;
+  border-bottom-color: #2e7d32;
+  color: #2e7d32;
 }
 
 .table-container{
-  border: 1px solid #c62828;;
+  border: 1px solid #2e7d32;
   border-radius : 3px;
 }
 
 .menu-list a.is-active {
-  background-color: #c62828;
+  background-color: #2e7d32;
 }
 
 .menu-list a:hover {
@@ -55,7 +84,7 @@ $turquoise: #26a69a;
 }
 
 .menu-list a.is-active:hover {
-  background-color: #c62828;
+  background-color: #2e7d32;
 }
 
 // spinner
