@@ -14,7 +14,6 @@ module.exports = {
   ...routerBase,
 
 
-
   /*
   ** Headers of the page
   */

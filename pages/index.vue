@@ -88,6 +88,12 @@
       loader
     },
     
+  created() {
+     if(localStorage.getItem('token') !== null ){
+                this.$router.push('/dashboard')
+    }
+  },
+
     data(){
       return{
 
