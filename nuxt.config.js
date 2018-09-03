@@ -1,4 +1,5 @@
 const pkg = require('./package')
+const path = require('path')
 
 /* nuxt.config.js */
 // only add `router.base = '/<repository-name>/'` if `DEPLOY_ENV` is `GH_PAGES`

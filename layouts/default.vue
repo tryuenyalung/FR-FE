@@ -64,6 +64,10 @@ $turquoise: #26a69a;
 //   background-color: #c62828;
 // }
 
+  .chk_box_big {
+    height: 30px;
+    width: 30px;
+  }
 
 .tabs li.is-active a {
   border-bottom-color: #2e7d32;
