@@ -85,13 +85,15 @@
 
               <tr v-for="users in filteredUserList" :key="users._id">
                 <td>
-
-                  <input v-model="recipientList" :value="users._id" class="chk_box_big" type="checkbox">
+                 <span> <input v-model="recipientList" :value="users._id" class="chk_box_big" type="checkbox"></span>
                 </td>
-                <td>{{users.name.first_name}} {{users.name.middle_name}} {{users.name.last_name}} </td>
-                <td>{{users.username}}</td>
-                <td>{{users.department}}</td>
-                <td>{{users.position}}</td>
+                
+                <td class="subtitle is-6">
+                  {{users.name.first_name}} {{users.name.middle_name}} {{users.name.last_name}} 
+                </td>
+                <td class="subtitle is-7">{{users.username}}</td>
+                <td class="subtitle is-7">{{users.department}}</td>
+                <td class="subtitle is-7">{{users.position}}</td>
               </tr>
 
             </tbody>
@@ -261,10 +263,7 @@
             recipients.push(tempObj)
           }
         })
-        console.log(recipients)
-
         return recipients
-
       },
 
       showNotif(type, title, icon, msg) {
@@ -341,25 +340,6 @@
 </script>
 
 <style scoped>
-  .is-table-scrollable {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-  }
-
-  .is-table-scrollable tbody {
-    display: block;
-    width: 100%;
-    overflow: auto;
-    height: 400px;
-  }
-
-
-  .is-table-scrollable th,
-  .is-table-scrollable td {
-    padding: 5px;
-    text-align: left;
-    width: 200px;
-  }
+ 
 
 </style>

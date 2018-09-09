@@ -135,7 +135,7 @@
 
                       <p for="label">Department</p>
                       <div class="select is-fullwidth" :class="{ 'is-danger': errors.has('department') }">
-                        <select name="department" v-model="department" v-validate="'required'">
+                        <select name="department" v-model="department" v-validate="'required'" required>
                           <option value="">Select Department</option>
                           <option :key="department" v-for="department in departmentOption" :value="department">{{ department }}</option>
                         </select>

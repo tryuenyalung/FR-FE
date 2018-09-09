@@ -64,10 +64,43 @@ $turquoise: #26a69a;
 //   background-color: #c62828;
 // }
 
-  .chk_box_big {
-    height: 30px;
-    width: 30px;
+
+ .is-table-scrollable {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
   }
+
+  .is-table-scrollable tbody {
+    display: block;
+    width: 100%;
+    overflow: auto;
+    height: 200px;
+  }
+
+    .is-div-scrollable   {
+    display: block;
+    width: 100%;
+    overflow: auto;
+    height: 70px;
+  }
+
+
+  .is-table-scrollable th,
+  .is-table-scrollable td {
+    padding: 5px;
+    text-align: left;
+    width: auto;
+  }
+
+.word-break{
+   word-break: break-all;
+}
+
+.chk_box_big {
+  height: 30px;
+  width: 30px;
+}
 
 .tabs li.is-active a {
   border-bottom-color: #2e7d32;

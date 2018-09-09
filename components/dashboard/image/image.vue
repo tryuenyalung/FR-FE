@@ -1,7 +1,7 @@
 <template>
     <div>
         <br>
-        <div class="tab-padding tabs is-centered is-boxed">
+        <div class="tab-padding tabs is-centered is-boxed is-marginless is-paddingless">
             <ul>
 
                 <li @click="changeActiveTab('my images')" :class="{'is-active' : activeTab === 'my images' }">

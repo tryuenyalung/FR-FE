@@ -1,22 +1,83 @@
 <template>
   <div>
 
-    <div class="modal " :class="{'is-active' : this.isSharedImageModalActive}">
-      <div class="modal-background" @click="toogleShareImageModal()" />
+    <div class="modal " :class="{'is-active' : this.isSharedFileModalActive}">
+      <div class="modal-background" @click="toggleUpdateFileModal()" />
 
       <div class="modal-content">
 
         <div class="box">
+
+
           <div class="columns">
             <div class="column">
-              <p class="subtitle is-4">Share Image To:</p>
+
+              <div class="columns">
+
+                <div class="column">
+
+                  <div class="field">
+                    <label class="has-text-weight-semibold">File Name:</label>
+                    <div class="control">
+                      <input @keydown.enter.prevent v-model="file_name" class="is-fullwidth input has-background-white-ter"
+                        type="text" placeholder="file name">
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="column">
+
+                  <div class="field">
+                    <label class="has-text-weight-semibold">File Name:</label>
+
+                    <div class="control select is-fullwidth">
+                      <select v-model="file_tag">
+                        <option disabled value="">Select File tag</option>
+                        <option :key="file._id" v-for="file in fileTagOption" :value="file.file_tag">{{
+                          file.file_tag }}</option>
+                      </select>
+                    </div>
+
+                  </div>
+
+
+
+                </div>
+              </div>
+
             </div>
+          </div>
+
+
+          <div class="columns">
+
+            <div class="column">
+              <p class="subtitle is-4">Share File To:</p>
+            </div>
+
             <div class="column">
               <span class="is-pulled-right">
                 Select All
                 <input class="chk_box_big" v-model="selectAllRecipient" type="checkbox">
               </span>
+            </div>
 
+          </div>
+
+
+
+          <div class="columns">
+            <div class="column">
+              <div class="is-div-scrollable">
+                <span v-for="users in filteredUserList" :key="users._id" v-if="isUserRecipient(`${users._id}`)">
+                  <span class="tag is-danger padding is-10">
+                    <b> {{users.name.first_name}} {{users.name.middle_name}} {{users.name.last_name}} </b>
+                    <!-- <button class="delete is-small"></button> -->
+                    <input v-model="recipientListIds" :value="users._id" class="delete is-small" type="checkbox">
+                  </span> &nbsp;
+                </span>
+              </div>
             </div>
           </div>
 
@@ -41,27 +102,30 @@
             </p>
           </div>
 
-
-
           <table class="table is-table-scrollable is-bordered is-striped is-narrow is-hoverable is-fullwidth">
 
             <tbody>
 
+
+
               <tr v-for="users in filteredUserList" :key="users._id">
                 <td>
-
-                  <input v-model="recipientList" :value="users._id" class="chk_box_big" type="checkbox">
+                  <span> <input v-model="recipientListIds" :value="users._id" class="chk_box_big" type="checkbox"></span>
                 </td>
-                <td>{{users.name.first_name}} {{users.name.middle_name}} {{users.name.last_name}} </td>
-                <td>{{users.username}}</td>
-                <td>{{users.department}}</td>
-                <td>{{users.position}}</td>
+
+                <td class="subtitle is-6">
+                  {{users.name.first_name}} {{users.name.middle_name}} {{users.name.last_name}}
+                </td>
+                <td class="subtitle is-7">{{users.username}}</td>
+                <td class="subtitle is-7">{{users.department}}</td>
+                <td class="subtitle is-7">{{users.position}}</td>
               </tr>
+
 
             </tbody>
 
             <tfoot><br>
-              <button @click="shareImages" class="button is-danger is-pulled-right">Send</button>
+              <button @click="shareFiles" class="button is-danger is-pulled-right">Send</button>
             </tfoot>
 
           </table>
@@ -74,46 +138,57 @@
     <!--modal-->
 
 
-    <div class="modal" :class="{'is-active': this.isUploadImageModalActive}">
-      <div @click="toggleUploadImageModal" class="modal-background" />
+    <div class="modal" :class="{'is-active': this.isUploadFileModalActive}">
+      <div @click="toggleUploadFileModal" class="modal-background" />
 
       <div class="modal-content">
         <div class="box">
 
-          <h3 class="subtitle is-3 has-text-centered">Upload Image</h3>
+          <h3 class="subtitle is-3 has-text-centered">Upload File</h3>
 
           <div class="file has-name is-boxed is-centered is-danger">
-            <form id="uploadImageForm">
+            <form id="uploadFileForm">
 
               <label class="file-label">
-                <input class="file-input" type="file" name="file" ref="inputImage" v-on:change="displayImageInfoOnForm"
+                <input class="file-input" type="file" name="file" ref="inputImage" v-on:change="displayFileInfoOnForm"
                   accept="image/png, image/jpeg">
-                <span class="file-cta">
+                <span class="file-cta is-borderless">
                   <span class="file-icon">
                     <i class="fas fa-upload"></i>
                   </span>
-                  <span class="file-label">
-                    Choose a image file…
+                  <span class="file-label has-text-centered">
+                    Choose a file…
                   </span>
+                  <div class="file-name is-centered has-text-centered" style="border-color: transparent !important">
+                    <p>{{this.fileUploadFileName}}</p>
+
+                  </div>
                 </span>
-                <span class="file-name">
-                  {{this.imageUploadFileName}}
-                </span>
+
+
+
                 <span>
                   <br>
-                  <input @keydown.enter.prevent v-model="image_tag" class="is-fullwidth input has-background-white-ter"
-                    type="text" name="image_tag" placeholder="add image tag..">
+                  <input @keydown.enter.prevent v-model="file_name" class="is-fullwidth input has-background-white-ter"
+                    type="text" placeholder="file name">
+                </span>
+                <span>
+                  <div class="select is-fullwidth ">
+                    <select v-model="file_tag">
+                      <option disabled value="">Select File tag</option>
+                      <option :key="file._id" v-for="file in fileTagOption" :value="file.file_tag">{{
+                        file.file_tag }}</option>
+                    </select>
+                  </div>
                 </span>
               </label>
 
             </form>
 
-
-
           </div>
 
           <div>
-            <button @click="validateUploadImageForm()" class="button is-danger is-pulled-right is-outlined">Upload</button>
+            <button @click="validateUploadFileForm()" class="button is-danger is-pulled-right is-outlined">Upload</button>
             <br>
           </div>
 
@@ -124,17 +199,17 @@
     </div>
     <!-- end of modal upload -->
 
-    <div class="modal" :class="{'is-active': this.isDeleteImageModalActive}">
-      <div @click="toggleDeleteImageModal" class="modal-background" />
+    <div class="modal" :class="{'is-active': this.isDeleteFileModalActive}">
+      <div @click="toggleDeleteFileModal()" class="modal-background" />
 
       <div class="modal-content">
         <div class="box">
 
-          <h4 class="subtitle is-4 has-text-centered">Are you sure you want to delete this image?</h4>
+          <h4 class="subtitle is-4 has-text-centered">Are you sure you want to delete this file?</h4>
 
-          <img :src="`${this.imageToBeDeleted.url}`" alt="">
+          <img :src="`${this.fileToBeDeleted.url}`" alt="">
           <div>
-            <button @click="deleteImage()" class="button is-danger is-pulled-right is-outlined">Delete</button>
+            <button @click="deleteFile()" class="button is-danger is-pulled-right is-outlined">Delete</button>
             <br>
           </div>
 
@@ -145,54 +220,81 @@
     </div>
     <!-- end of modal delete -->
 
-    <div class="section">
+    <div class="section ">
 
       <!--search input-->
       <div class="field has-addons has-addons-centered">
         <p class="control is-expanded">
-          <input @keydown.enter="searchImage" v-model="imageSearchInput" class="input is-medium" type="text"
-            placeholder="Search images...">
+          <input @keydown.enter="searchFile" v-model="fileSearchInput" class="input is-medium" type="text" placeholder="Search files...">
         </p>
 
         <p class="control">
-          <button @click="searchImage" class="button is-danger is-outlined is-pulled-right fas fa-search is-medium" />
+          <button @click="searchFile" class="button is-danger is-outlined is-pulled-right fas fa-search is-medium" />
         </p>
 
-        <p class="control">
-          <button @click="toggleUploadImageModal()" class="button is-danger is-outlined is-pulled-right fas fa-cloud-upload-alt is-medium" />
-        </p>
+
+      </div>
+
+      <!--search input-->
+      <div class="columns">
+        <div class="column">
+          <p class="control">
+            <button @click="toggleUploadFileModal()" class="button is-danger is-outlined is-pulled-left fas fa-cloud-upload-alt is-medium" />
+          </p>
+        </div>
+
+        <div class="column">
+          <div class="select is-fullwidth ">
+            <select @change="filterFileList()" v-model="filterFileBy">
+              <option disabled value="">Filter by tag</option>
+              <option value="">All</option>
+              <option :key="file._id" v-for="file in fileTagOption" :value="file.file_tag">{{ file.file_tag }}</option>
+            </select>
+          </div>
+        </div>
+
+
+
       </div>
 
       <!--image box-->
 
 
-      <div class="columns" v-for="images in chunkedUserImageData" :key="images._id">
-        <div class="column is-one-quarter" v-for="image in images" :key="image._id">
+      <div class="columns" v-for="files in chunkedUserFileData" :key="files._id">
+        <div class="column is-one-quarter" v-for="file in files" :key="file._id">
 
           <div class="card">
 
-            <div class="padding is-10">
-              <span class="subtitle is-5">
-                <b class="is-size-6">{{image.metadata.tag}}</b>
-              </span>
-              <br>
-              <span class=" is-pulled-right tag is-danger">
-                <b> {{ byteToMb(image.length) }} mb</b>
-              </span>&nbsp;
+            <div class="level has-text-centered padding is-10 is-marginless">
+              <b class="level-item is-size-6 word-break">{{file.metadata.name}}</b>
+            </div>
+
+            <div class="level has-text-centered padding is-10 is-marginless">
+
+              <div class="level-left is-marginless">
+                <b class="tag is-danger">{{file.metadata.tag}}</b>
+              </div>
+
+              <div class="level-right is-marginless">
+                <b class="tag is-danger"> {{ byteToMb(file.length) }} mb</b>
+              </div>
+
             </div>
 
             <div class="card-image">
               <figure class="image is-5by4">
-                <img :src="`${API_IMAGE}${image.filename}`" alt="Placeholder image">
+                <img :src="`${API_IMAGE}${file.filename}`" alt="Placeholder image">
               </figure>
             </div>
 
             <footer class="card-footer">
-              <a @click="getImageDetailsToBeDeleted(`${image.filename}`, `${API_IMAGE}${image.filename}`)" class="card-footer-item fas fa-trash-alt" />
-              <a @click="copyToClipBoard(`${API_IMAGE}${image.filename}`)" class="card-footer-item fas fa-copy" />
-              <a target="_blank" :href="`${API_IMAGE}${image.filename}`" class="card-footer-item fas fa-external-link-alt" />
-              <a @click="toogleShareImageModal" class="card-footer-item fas fa-share-alt" />
+              <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
+              <a @click="copyToClipBoard(`${API_IMAGE}${file.filename}`)" class="card-footer-item fas fa-copy" />
+              <a target="_blank" :href="`${API_IMAGE}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
+              <a @click="getFileDetailsToBeShared(`${file.filename}`,`${file.metadata.name}`,`${file.metadata.tag}`)"
+                class="card-footer-item fas fa-share-alt" />
             </footer>
+
 
           </div>
 
@@ -219,11 +321,11 @@
         <div class="level-item">
           <div class="field has-addons">
             <p class="control">
-              <a class="button is-static"> Page: 1 </a>
+              <a class="button is-static"> Page: {{filePageNo}} </a>
             </p>
 
             <p class="control">
-              <a class="button is-static"> Total: {{imageListTotalNo}} </a>
+              <a class="button is-static"> Total: {{fileListTotalNo}} </a>
             </p>
           </div>
         </div>
@@ -246,7 +348,7 @@
 
 
 
-     <!-- <table>
+    <!-- <table>
         <tr>
             <th><input type="checkbox" v-model="selectAllRecipient"></th>
             <th align="left">Name</th>
@@ -274,7 +376,7 @@
     mounted() {
       this.toggleLoader()
       this.getListOfUsers()
-      this.getMyImages()
+      this.getMyFiles()
       // this.users = [{ "id": "1", "name": "Shad Jast", "email": "pfeffer.matt@yahoo.com" },
       //       { "id": "2", "name": "Duane Metz", "email": "mohammad.ferry@yahoo.com" }, 
       //       { "id": "3", "name": "Myah Kris", "email": "evolkman@hotmail.com" }, 
@@ -292,56 +394,81 @@
 
 
         //numeric
-        imageListTotalPageNo: 0,
-        imageListTotalNo: 0,
-        imagePageNo: 1,
+        fileListTotalPageNo: 0,
+        fileListTotalNo: 0,
+        filePageNo: 1,
 
         //string
         userSearchInput: '',
         userSearchBy: 'Name',
-        imageSearchInput: "",
-        image_tag: '',
-        imageUploadFileName: '',
+        filterFileBy: '',
+        fileSearchInput: "",
+        file_name: '',
+        file_tag: '',
+        fileUploadFileName: '',
+
+
+
 
         //boolean
         isLoaderActive: false,
-        isUploadImageModalActive: false,
-        isDeleteImageModalActive: false,
-        isSharedImageModalActive: false,
+        isUploadFileModalActive: false,
+        isDeleteFileModalActive: false,
+        isSharedFileModalActive: false,
         isRecipentSelectAll: false,
         // updateModalState: false,
 
+
+
         //object
-        imageToBeDeleted: {},
+        fileToBeDeleted: {},
+        fileToBeUpdated: {},
+        fileToBeShared: {},
 
         //collection
-        imageList: [],
+
+        fileList: [],
+        filteredFileList: [],
         userList: [],
-        recipientList: []
+        recipientListIds: [],
+        fileTagOption: [{
+            "_id": "231212",
+            "file_tag": "Meadadadadadasdadasdsdsadsadasdsadadadasdasmo"
+          },
+          {
+            "_id": "231asd212",
+            "file_tag": "Clearance"
+          },
+          {
+            "_id": "231asd21asd2",
+            "file_tag": "Memo"
+          }
+        ],
 
 
       } //return
     }, //data
 
+
     computed: {
-      chunkedUserImageData() {
-        return _.chunk(this.imageList, 4);
+      chunkedUserFileData() {
+        return _.chunk(this.filteredFileList, 4)
       },
 
 
       selectAllRecipient: { //i dont really get this :(
         get: function () {
-          // let isRecipientListEqualToFilteredUserList = this.recipientList.length == this.filteredUserList.length
-          return this.filteredUserList ? this.recipientList.length == this.filteredUserList.length : false
+          // let isrecipientListIdsEqualToFilteredUserList = this.recipientListIds.length == this.filteredUserList.length
+          return this.filteredUserList ? this.recipientListIds.length == this.filteredUserList.length : false
         },
         set: function (value) {
-          let recipientList = []
+          let recipientListIds = []
 
           if (value) {
-            this.filteredUserList.forEach( (user) =>  recipientList.push(user._id) )
+            this.filteredUserList.forEach((user) => recipientListIds.push(user._id))
           }
 
-          this.recipientList = recipientList
+          this.recipientListIds = recipientListIds
         }
       },
 
@@ -369,29 +496,90 @@
     }, //computed
 
     methods: {
-      toogleShareImageModal() {
-        // this.toogleSelecAllRecipient
-        this.isSharedImageModalActive = !this.isSharedImageModalActive
+
+      isUserRecipient(id) {
+        //determines the shared user to be display
+        let sharedUser = this.recipientListIds
+
+        let isUserRecipient = false
+
+        sharedUser.forEach(x => {
+          if (x === id) {
+            isUserRecipient = true
+          }
+        })
+
+        return isUserRecipient
       },
+
+      toggleUpdateFileModal() {
+        // this.toogleSelecAllRecipient
+        this.isSharedFileModalActive = !this.isSharedFileModalActive
+      },
+
       toogleSelecAllRecipient() {
         this.isRecipentSelectAll = !this.isRecipentSelectAll
       },
-      
-      shareImages(){
-        let yuen = []
-     
-          this.userList.forEach( x => {
-            if( this.recipientList.includes(x._id) ){
-                let tempObj = {id: x._id, name: `${x.name.first_name} ${x.name.middle_name} ${x.name.last_name}` }
-                yuen.push(tempObj)
-            }
-          })
 
-        console.log(yuen)
+
+
+      shareFiles() {
+        this.toggleLoader()
+        let userIds = []
+
+        this.userList.forEach(x => {
+          if (this.recipientListIds.includes(x._id)) {
+
+            let tempObj = {
+              id: x._id
+            }
+            userIds.push(tempObj)
+
+          }
+        })
+
+        this.fileToBeShared["sharedUser"] = userIds
+        this.fileToBeShared["name"] = this.file_name
+        this.fileToBeShared["tag"] = this.file_tag
+
+console.log(this.fileToBeShared);
+        const config = {
+          method: 'PUT',
+          url: `${keys.BASE_URL}/api/v1/files`,
+          data: this.fileToBeShared,
+          headers: {
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`
+          }
+
+        }
+
+        axios(config)
+          .then(res => {
+
+            this.getMyFiles()
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'File successfully shared..'))
+            this.toggleUpdateFileModal()
+            // this.toggleLoader()
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.toggleUpdateFileModal()
+            alert(err)
+          })
       },
 
+      filterFileList() {
+        this.filteredFileList = this.fileList.filter(x => {
+          if (_.isEmpty(this.filterFileBy)) {
+            return this.fileList
+          } else {
+            return x.metadata.tag === this.filterFileBy
+          }
+        })
+      }, //filteredUserList
 
-      getMyImages() {
+
+      getMyFiles() {
         const config = {
           method: 'GET',
           url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}`,
@@ -403,9 +591,10 @@
 
         axios(config)
           .then(res => {
-            this.imageList = res.data.docs
-            this.imageListTotalPageNo = res.data.pages
-            this.imageListTotalNo = res.data.total
+            this.fileList = res.data.docs
+            this.filteredFileList = res.data.docs
+            this.fileListTotalPageNo = res.data.pages
+            this.fileListTotalNo = res.data.total
             this.toggleLoader()
           })
           .catch(err => {
@@ -426,6 +615,9 @@
         axios(config)
           .then(res => {
             this.userList = res.data
+            this.userList.filter(x => x._id === this.$store.state.user_details.user.department).inde
+            let indexOfUser = this.userList.findIndex(x => x._id === this.$store.state.user_details.user._id)
+            this.userList.splice(indexOfUser, 1)
           })
           .catch(err => {
             this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
@@ -449,29 +641,59 @@
       toggleLoader() {
         this.isLoaderActive = !this.isLoaderActive
       },
-      toggleUploadImageModal() {
-        this.isUploadImageModalActive = !this.isUploadImageModalActive
-      },
-      toggleDeleteImageModal() {
-        this.isDeleteImageModalActive = !this.isDeleteImageModalActive
+
+
+      toggleUploadFileModal() {
+        this.isUploadFileModalActive = !this.isUploadFileModalActive
       },
 
-      getImageDetailsToBeDeleted(filename, url) {
-        this.imageToBeDeleted = {
+
+      toggleDeleteFileModal() {
+        this.isDeleteFileModalActive = !this.isDeleteFileModalActive
+      },
+
+
+      getFileDetailsToBeDeleted(filename) {
+
+        this.fileToBeDeleted = {
           filename: filename,
-          url: url
+          url: `${this.API_IMAGE}${filename}`,
         }
-        this.toggleDeleteImageModal()
+
+        this.toggleDeleteFileModal()
+      },
+
+      getFileDetailsToBeShared(filename, file_name, file_tag) {
+        //get the shared user of the file
+        let sharedUser = this.filteredFileList.find(x => x.filename === filename).metadata.sharedUser
+        let recipientListIds = []
+        //extract the id's for checkbox usage
+        sharedUser.forEach(x => recipientListIds.push(x.id))
+        this.recipientListIds = recipientListIds
+
+
+        let tempObj = []
+
+        //set the data for displaying
+        this.file_name = file_name
+        this.file_tag = file_tag
+
+        this.fileToBeShared = {
+          filename: filename,
+          bucket: keys.BUCKET_IMAGE
+        }
+        this.toggleUpdateFileModal()
       },
 
       firstPage() {
+
         this.toggleLoader()
 
-        this.imagePageNo = 1
+        this.filePageNo = 1
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.imagePageNo}&tag=${this.imageSearchInput}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -479,7 +701,9 @@
 
         axios(config)
           .then(res => {
-            this.imageList = res.data.docs
+            this.fileList = res.data.docs
+            this.filterFileBy = ''
+            this.filterFileList()
             this.toggleLoader()
           })
           .catch(err => {
@@ -491,11 +715,11 @@
       lastPage() {
         this.toggleLoader()
 
-        this.imagePageNo = this.imageListTotalPageNo
+        this.filePageNo = this.fileListTotalPageNo
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.imagePageNo}&tag=${this.imageSearchInput}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -503,7 +727,9 @@
 
         axios(config)
           .then(res => {
-            this.imageList = res.data.docs
+            this.fileList = res.data.docs
+            this.filterFileBy = ''
+            this.filterFileList()
             this.toggleLoader()
           })
           .catch(err => {
@@ -515,11 +741,11 @@
       nextPage() {
         this.toggleLoader()
 
-        this.imagePageNo += 1
+        this.filePageNo += 1
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.imagePageNo}&tag=${this.imageSearchInput}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -529,11 +755,13 @@
           .then(res => {
 
             if ((res.data.docs).length === 0) {
-              this.imagePageNo -= 1
+              this.filePageNo -= 1
               this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', 'no more data to display'))
               this.toggleLoader()
             } else {
-              this.imageList = res.data.docs
+              this.fileList = res.data.docs
+              this.filterFileBy = ''
+              this.filterFileList()
               this.toggleLoader()
             }
 
@@ -546,15 +774,15 @@
 
       prevPage() {
 
-        if (this.imagePageNo === 1) {
+        if (this.filePageNo === 1) {
 
         } else {
-          this.imagePageNo -= 1
+          this.filePageNo -= 1
           this.toggleLoader()
 
           const config = {
             method: 'GET',
-            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.imagePageNo}&tag=${this.imageSearchInput}`,
+            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}&tag=${this.fileSearchInput}`,
             headers: {
               "Authorization": `Bearer ${this.$store.state.user_details.token}`
             }
@@ -562,8 +790,10 @@
 
           axios(config)
             .then(res => {
+              this.fileList = res.data.docs
+              this.filterFileBy = ''
+              this.filterFileList()
               this.toggleLoader()
-              this.imageList = res.data.docs
             })
             .catch(err => {
               this.toggleLoader()
@@ -572,14 +802,16 @@
         }
       },
 
-      displayImageInfoOnForm() {
-        this.imageUploadFileName = this.$refs.inputImage.value
+
+      displayFileInfoOnForm() {
+        this.fileUploadFileName = this.$refs.inputImage.value
       },
 
-      validateUploadImageForm() {
 
-        if (!_.isEmpty(this.imageUploadFileName) && !_.isEmpty(this.image_tag)) {
-          this.uploadImage()
+      validateUploadFileForm() {
+
+        if (!_.isEmpty(this.fileUploadFileName) && !_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag)) {
+          this.uploadFile()
         } else {
           this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',
             'Please choose an image to upload and add image tag..'))
@@ -587,13 +819,14 @@
 
       },
 
-      uploadImage() {
+
+      uploadFile() {
         this.toggleLoader()
-        let formData = new FormData(uploadImageForm) //new FormData(formNameHere)
+        let formData = new FormData(uploadFileForm) //new FormData(formNameHere)
 
         const config = {
           method: 'POST',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.image_tag}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.file_tag}&name=${this.file_name}`,
           data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -603,28 +836,30 @@
 
         axios(config)
           .then(res => {
-            this.toggleLoader()
-            this.toggleUploadImageModal()
-            this.searchImage()
+            this.toggleUploadFileModal()
+            this.getMyFiles()
             this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully upload..'))
-            this.imageUploadFileName = ''
-            this.image_tag = ''
+            this.fileUploadFileName = ''
+            this.file_name = ''
+            this.file_tag = ''
           })
           .catch(err => {
             this.toggleLoader()
-            this.toggleUploadImageModal()
+            this.toggleUploadFileModal()
             this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
-            this.imageUploadFileName = ''
-            this.image_tag = ''
+            this.fileUploadFileName = ''
+            this.file_name = ''
+            this.file_tag = ''
           })
 
       },
 
-      searchImage() {
+
+      searchFile() {
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.imageSearchInput}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&name=${this.fileSearchInput}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -633,7 +868,9 @@
         axios(config)
           .then(res => {
             this.toggleLoader()
-            this.imageList = res.data.docs
+            this.fileList = res.data.docs
+            this.filterFileBy = ''
+            this.filterFileList()
           })
           .catch(err => {
             this.toggleLoader()
@@ -641,11 +878,12 @@
           })
       },
 
-      deleteImage() {
+
+      deleteFile() {
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_IMAGE}&filename=${this.imageToBeDeleted.filename}`,
+          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_IMAGE}&filename=${this.fileToBeDeleted.filename}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -654,13 +892,13 @@
         axios(config)
           .then(res => {
             this.toggleLoader()
-            this.searchImage()
-            this.toggleDeleteImageModal()
+            this.searchFile()
+            this.toggleDeleteFileModal()
           })
           .catch(err => {
             this.toggleLoader()
             this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle', err))
-            this.toggleDeleteImageModal()
+            this.toggleDeleteFileModal()
           })
       },
 
@@ -697,4 +935,3 @@
   }
 
 </style>
-

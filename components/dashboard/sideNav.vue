@@ -73,7 +73,7 @@
 <style scoped>
 
     section{
-        height: 100vh;
+        height: 115vh;
     }
 
     .avatar img {
