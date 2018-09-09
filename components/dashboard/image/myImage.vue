@@ -102,7 +102,7 @@
             </p>
           </div>
 
-          <table class="table is-table-scrollable is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+          <table class=" table is-table-scrollable is-bordered is-striped is-narrow is-hoverable is-fullwidth">
 
             <tbody>
 
@@ -265,8 +265,10 @@
 
           <div class="card">
 
-            <div class="level has-text-centered padding is-10 is-marginless">
-              <b class="level-item is-size-6 word-break">{{file.metadata.name}}</b>
+            <div class="columns v-centered is-marginless">
+              <div class="column has-text-centered">
+                <b>{{file.metadata.name}}</b>
+              </div>
             </div>
 
             <div class="level has-text-centered padding is-10 is-marginless">

@@ -94,7 +94,7 @@ $turquoise: #26a69a;
   }
 
 .word-break{
-   word-break: break-all;
+   word-break: break-word  !important;
 }
 
 .chk_box_big {
