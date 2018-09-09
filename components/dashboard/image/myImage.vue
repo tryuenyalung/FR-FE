@@ -125,7 +125,7 @@
             </tbody>
 
             <tfoot><br>
-              <button @click="shareFiles" class="button is-danger is-pulled-right">Send</button>
+              <button @click="validateUpdateFileForm" class="button is-danger is-pulled-right">Send</button>
             </tfoot>
 
           </table>
@@ -524,6 +524,7 @@
 
 
       shareFiles() {
+
         this.toggleLoader()
         let userIds = []
 
@@ -542,7 +543,6 @@
         this.fileToBeShared["name"] = this.file_name
         this.fileToBeShared["tag"] = this.file_tag
 
-console.log(this.fileToBeShared);
         const config = {
           method: 'PUT',
           url: `${keys.BASE_URL}/api/v1/files`,
@@ -808,13 +808,24 @@ console.log(this.fileToBeShared);
       },
 
 
+    validateUpdateFileForm() {
+
+        if (!_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag)) {
+          this.shareFiles()
+        } else {
+          this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',
+            'Please fill in the remaining fields'))
+        }
+
+      },
+
       validateUploadFileForm() {
 
         if (!_.isEmpty(this.fileUploadFileName) && !_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag)) {
           this.uploadFile()
         } else {
           this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',
-            'Please choose an image to upload and add image tag..'))
+            'Please fill in the remaining fields'))
         }
 
       },
