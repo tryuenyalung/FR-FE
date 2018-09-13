@@ -151,7 +151,7 @@
 
               <label class="file-label">
                 <input class="file-input" type="file" name="file" ref="inputImage" v-on:change="displayFileInfoOnForm"
-                  accept="image/png, image/jpeg">
+                  accept=".ppt, .pot, .pps, .pptx, .pptm, .potx, .potm, .ppam, .ppsx, .ppsm, .sldx, .sldm">
                 <span class="file-cta is-borderless">
                   <span class="file-icon">
                     <i class="fas fa-upload"></i>
@@ -282,16 +282,19 @@
 
             </div>
 
+
             <div class="card-image">
-              <figure class="image is-5by4">
-                <img :src="`${API_IMAGE}${file.filename}`" alt="Placeholder image">
-              </figure>
+              <div class="has-text-centered">
+                <i class="fa-10x far fa-file-powerpoint has-text-danger"></i>
+                <br>
+                <br>
+              </div>
             </div>
 
             <footer class="card-footer">
               <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
-              <a @click="copyToClipBoard(`${API_IMAGE}${file.filename}`)" class="card-footer-item fas fa-copy" />
-              <a target="_blank" :href="`${API_IMAGE}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
+              <a @click="copyToClipBoard(`${API_PRESENTATION}${file.filename}`)" class="card-footer-item fas fa-copy" />
+              <a target="_blank" :href="`${API_PRESENTATION}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
               <a @click="getFileDetailsToBeShared(`${file.filename}`,`${file.metadata.name}`,`${file.metadata.tag}`)"
                 class="card-footer-item fas fa-share-alt" />
             </footer>
@@ -391,7 +394,7 @@
 
     data() {
       return {
-        API_IMAGE: `${keys.BASE_URL}${keys.API_IMAGE}/`,
+        API_PRESENTATION: `${keys.BASE_URL}${keys.API_PRESENTATION}/`,
 
 
         //numeric
@@ -569,11 +572,11 @@
 
 
       getMyFiles() {
-      this.toggleLoader()
+        this.toggleLoader()
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PRESENTATION}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -595,7 +598,7 @@
       },
 
       getListOfUsers() {
-         this.toggleLoader()
+        this.toggleLoader()
         const config = {
           method: 'GET',
           url: `${keys.BASE_URL}/api/v1/users/search?status=y`,
@@ -606,14 +609,14 @@
 
         axios(config)
           .then(res => {
-             this.toggleLoader()
+            this.toggleLoader()
             this.userList = res.data
             this.userList.filter(x => x._id === this.$store.state.user_details.user.department).inde
             let indexOfUser = this.userList.findIndex(x => x._id === this.$store.state.user_details.user._id)
             this.userList.splice(indexOfUser, 1)
           })
           .catch(err => {
-             this.toggleLoader()
+            this.toggleLoader()
             this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
           })
       },
@@ -651,7 +654,7 @@
 
         this.fileToBeDeleted = {
           filename: filename,
-          url: `${this.API_IMAGE}${filename}`,
+          url: `${this.API_PRESENTATION}${filename}`,
         }
 
         this.toggleDeleteFileModal()
@@ -674,7 +677,7 @@
 
         this.fileToBeShared = {
           filename: filename,
-          bucket: keys.BUCKET_IMAGE
+          bucket: keys.BUCKET_PRESENTATION
         }
         this.toggleUpdateFileModal()
       },
@@ -687,7 +690,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PRESENTATION}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -713,7 +716,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PRESENTATION}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -739,7 +742,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PRESENTATION}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -776,7 +779,7 @@
 
           const config = {
             method: 'GET',
-            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}&tag=${this.fileSearchInput}`,
+            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PRESENTATION}&page=${this.filePageNo}&tag=${this.fileSearchInput}`,
             headers: {
               "Authorization": `Bearer ${this.$store.state.user_details.token}`
             }
@@ -802,7 +805,7 @@
       },
 
 
-    validateUpdateFileForm() {
+      validateUpdateFileForm() {
 
         if (!_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag)) {
           this.shareFiles()
@@ -831,7 +834,7 @@
 
         const config = {
           method: 'POST',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.file_tag}&name=${this.file_name}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PRESENTATION}&tag=${this.file_tag}&name=${this.file_name}`,
           data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -848,7 +851,7 @@
             this.fileUploadFileName = ''
             this.file_name = ''
             this.file_tag = ''
-             this.toggleLoader()
+            this.toggleLoader()
           })
           .catch(err => {
             this.toggleLoader()
@@ -887,7 +890,7 @@
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&name=${this.fileSearchInput}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PRESENTATION}&name=${this.fileSearchInput}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -911,7 +914,7 @@
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_IMAGE}&filename=${this.fileToBeDeleted.filename}`,
+          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_PRESENTATION}&filename=${this.fileToBeDeleted.filename}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
