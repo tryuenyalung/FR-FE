@@ -61,10 +61,12 @@
 
             </div>
 
-            <div class="card-image" v-cloak>
-              <figure class="image is-5by4">
-                <img :src="`${API_IMAGE}${file.filename}`" alt="Placeholder image">
-              </figure>
+            <div class="card-image">
+              <div class="has-text-centered">
+                <i class="fa-10x far fa-file-word has-text-danger"></i>
+                <br>
+                <br>
+              </div>
             </div>
 
             <div class="padding is-10">
@@ -78,8 +80,7 @@
 
 
             <footer class="card-footer">
-              <a @click="copyToClipBoard(`${API_IMAGE}${file.filename}`)" class="card-footer-item fas fa-copy" />
-              <a target="_blank" :href="`${API_IMAGE}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
+              <a target="_blank" :href="`${API_DOCUMENT}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
             </footer>
 
 
@@ -163,7 +164,7 @@
 
     data() {
       return {
-        API_IMAGE: `${keys.BASE_URL}${keys.API_IMAGE}/`,
+        API_DOCUMENT: `${keys.BASE_URL}${keys.API_DOCUMENT}/`,
 
 
         //numeric
@@ -279,7 +280,7 @@
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}`,
+          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -349,7 +350,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -375,7 +376,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -401,7 +402,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -438,7 +439,7 @@
 
           const config = {
             method: 'GET',
-            url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+            url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&page=${this.filePageNo}`,
             headers: {
               "Authorization": `Bearer ${this.$store.state.user_details.token}`
             }
@@ -462,7 +463,7 @@
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&name=${this.fileSearchInput}`,
+          url: `${keys.BASE_URL}/api/v1/files/sharedFile?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&name=${this.fileSearchInput}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }

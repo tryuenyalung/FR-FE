@@ -151,7 +151,7 @@
 
               <label class="file-label">
                 <input class="file-input" type="file" name="file" ref="inputImage" v-on:change="displayFileInfoOnForm"
-                  accept="image/png, image/jpeg">
+                  accept=".doc, .dot, .wbk, .docx, .docm, .dotx, .dotm, .docb">
                 <span class="file-cta is-borderless">
                   <span class="file-icon">
                     <i class="fas fa-upload"></i>
@@ -259,7 +259,7 @@
       <!--image box-->
 
 
-      <div class="columns" v-for="files in chunkedUserFileData" :key="files._id" >
+      <div class="columns" v-for="files in chunkedUserFileData" :key="files._id">
         <div class="column is-one-quarter" v-for="file in files" :key="file._id">
 
           <div class="card">
@@ -283,15 +283,17 @@
             </div>
 
             <div class="card-image">
-              <figure class="image is-5by4">
-                <img :src="`${API_IMAGE}${file.filename}`" alt="Placeholder image">
-              </figure>
+              <div class="has-text-centered">
+                <i class="fa-10x far fa-file-word has-text-danger"></i>
+                <br>
+                <br>
+              </div>
             </div>
+
 
             <footer class="card-footer">
               <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
-              <a @click="copyToClipBoard(`${API_IMAGE}${file.filename}`)" class="card-footer-item fas fa-copy" />
-              <a target="_blank" :href="`${API_IMAGE}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
+               <a target="_blank" :href="`${API_DOCUMENT}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
               <a @click="getFileDetailsToBeShared(`${file.filename}`,`${file.metadata.name}`,`${file.metadata.tag}`)"
                 class="card-footer-item fas fa-share-alt" />
             </footer>
@@ -372,7 +374,7 @@
 
     data() {
       return {
-        API_IMAGE: `${keys.BASE_URL}${keys.API_IMAGE}/`,
+        API_DOCUMENT: `${keys.BASE_URL}${keys.API_DOCUMENT}/`,
 
 
         //numeric
@@ -558,7 +560,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -636,7 +638,7 @@
 
         this.fileToBeDeleted = {
           filename: filename,
-          url: `${this.API_IMAGE}${filename}`,
+          url: `${this.API_DOCUMENT}${filename}`,
         }
 
         this.toggleDeleteFileModal()
@@ -659,7 +661,7 @@
 
         this.fileToBeShared = {
           filename: filename,
-          bucket: keys.BUCKET_IMAGE
+          bucket: keys.BUCKET_DOCUMENT
         }
         this.toggleUpdateFileModal()
       },
@@ -672,7 +674,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -698,7 +700,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -724,7 +726,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -761,7 +763,7 @@
 
           const config = {
             method: 'GET',
-            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&page=${this.filePageNo}&tag=${this.fileSearchInput}`,
+            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&page=${this.filePageNo}&tag=${this.fileSearchInput}`,
             headers: {
               "Authorization": `Bearer ${this.$store.state.user_details.token}`
             }
@@ -816,7 +818,7 @@
 
         const config = {
           method: 'POST',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.file_tag}&name=${this.file_name}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&tag=${this.file_tag}&name=${this.file_name}`,
           data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -872,7 +874,7 @@
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&name=${this.fileSearchInput}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&name=${this.fileSearchInput}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -896,7 +898,7 @@
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_IMAGE}&filename=${this.fileToBeDeleted.filename}`,
+          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_DOCUMENT}&filename=${this.fileToBeDeleted.filename}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }

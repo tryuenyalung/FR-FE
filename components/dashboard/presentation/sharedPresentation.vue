@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <div v-if="isUserListLoaded" class="section padding is-10">
+    <div class="section padding is-10">
 
       <!--search input-->
       <div class="field has-addons has-addons-centered">
@@ -29,7 +29,7 @@
             <select @change="filterFileList()" v-model="filterFileBy">
               <option disabled value="">Filter by tag</option>
               <option value="">All</option>
-              <option :key="file._id" v-for="file in fileTagOption" :value="file.file_tag">{{ file.file_tag }}</option>
+              <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{ file.file_tag }}</option>
             </select>
           </div>
         </div>
@@ -51,8 +51,8 @@
 
             <div class="level has-text-centered padding is-10 is-marginless">
 
-              <div class="level-left is-marginless">
-                <b class="tag is-danger">{{file.metadata.tag}}</b>
+              <div class="level-left is-marginless" v-if="isFileTagLoaded">
+                <b class="tag is-danger">{{getFileTagNameById(file.metadata.tag)}}</b>
               </div>
 
               <div class="level-right is-marginless">
@@ -70,18 +70,17 @@
             </div>
 
             <div class="padding is-10">
-              <span>
-                <small>Shared by: <b> {{ getUserInfoById(file.metadata.owner)}}</b> </small>
+              <span v-if="isUserListLoaded">
+                <small>Shared by: <b> {{getUserInfoById(file.metadata.owner)}}</b> </small>
 
               </span>
             </div>
 
 
-
+ 
 
             <footer class="card-footer">
-              <a @click="copyToClipBoard(`${API_PRESENTATION}${file.filename}`)" class="card-footer-item fas fa-copy" />
-              <a target="_blank" :href="`${API_PRESENTATION}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
+              <a target="_blank" :href="`${API_PRESENTATION}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
             </footer>
 
 
@@ -203,6 +202,9 @@
         return this.userList.length;
       },
 
+      isFileTagLoaded() {
+        return this.fileTagOption.length;
+      },
 
       filteredUserList() {
         return this.userList.filter(x => {
@@ -239,10 +241,13 @@
         })
       }, //filteredUserList
 
+      getFileTagNameById(id) {
+        let fileTag = this.fileTagOption.find(x => x._id === id)
+        return `${fileTag.file_tag}`
+      },
+
       getUserInfoById(id) {
-        console.log(this.userList)
         let userInfo = this.userList.find(x => x._id === id)
-        console.log(userInfo)
         return `${userInfo.name.first_name} ${userInfo.name.middle_name} ${userInfo.name.last_name}`
       },
 

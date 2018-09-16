@@ -29,12 +29,12 @@
                 <div class="column">
 
                   <div class="field">
-                    <label class="has-text-weight-semibold">File Name:</label>
+                    <label class="has-text-weight-semibold">File Tag:</label>
 
                     <div class="control select is-fullwidth">
                       <select v-model="file_tag">
                         <option disabled value="">Select File tag</option>
-                        <option :key="file._id" v-for="file in fileTagOption" :value="file.file_tag">{{
+                        <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{
                           file.file_tag }}</option>
                       </select>
                     </div>
@@ -176,7 +176,7 @@
                   <div class="select is-fullwidth ">
                     <select v-model="file_tag">
                       <option disabled value="">Select File tag</option>
-                      <option :key="file._id" v-for="file in fileTagOption" :value="file.file_tag">{{
+                      <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{
                         file.file_tag }}</option>
                     </select>
                   </div>
@@ -247,7 +247,7 @@
             <select @change="filterFileList()" v-model="filterFileBy">
               <option disabled value="">Filter by tag</option>
               <option value="">All</option>
-              <option :key="file._id" v-for="file in fileTagOption" :value="file.file_tag">{{ file.file_tag }}</option>
+              <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{ file.file_tag }}</option>
             </select>
           </div>
         </div>
@@ -272,8 +272,8 @@
 
             <div class="level has-text-centered padding is-10 is-marginless">
 
-              <div class="level-left is-marginless">
-                <b class="tag is-danger">{{file.metadata.tag}}</b>
+              <div class="level-left is-marginless" v-if="isFileTagLoaded">
+                <b class="tag is-danger">{{getFileTagNameById(file.metadata.tag)}}</b>
               </div>
 
               <div class="level-right is-marginless">
@@ -281,7 +281,6 @@
               </div>
 
             </div>
-
 
             <div class="card-image">
               <div class="has-text-centered">
@@ -291,10 +290,10 @@
               </div>
             </div>
 
+
             <footer class="card-footer">
               <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
-              <a @click="copyToClipBoard(`${API_PRESENTATION}${file.filename}`)" class="card-footer-item fas fa-copy" />
-              <a target="_blank" :href="`${API_PRESENTATION}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
+               <a target="_blank" :href="`${API_PRESENTATION}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
               <a @click="getFileDetailsToBeShared(`${file.filename}`,`${file.metadata.name}`,`${file.metadata.tag}`)"
                 class="card-footer-item fas fa-share-alt" />
             </footer>
@@ -350,21 +349,6 @@
 
     </div>
 
-
-
-    <!-- <table>
-        <tr>
-            <th><input type="checkbox" v-model="selectAllRecipient"></th>
-            <th align="left">Name</th>
-        </tr>
-        <tr v-for="user in filteredUserList" :key="user._id">
-            <td>
-                <input type="checkbox" v-model="selected" :value="user._id">
-            </td>
-            <td>{{ user.name.first_name }}</td>
-        </tr>
-        </table> -->
-
     <loader :isActive="this.isLoaderActive" />
   </div>
 </template>
@@ -381,10 +365,6 @@
       this.getListOfUsers()
       this.getMyFiles()
       this.getFileTags()
-      // this.users = [{ "id": "1", "name": "Shad Jast", "email": "pfeffer.matt@yahoo.com" },
-      //       { "id": "2", "name": "Duane Metz", "email": "mohammad.ferry@yahoo.com" }, 
-      //       { "id": "3", "name": "Myah Kris", "email": "evolkman@hotmail.com" }, 
-      //       { "id": "4", "name": "Dr. Kamron Wunsch", "email": "lenora95@leannon.com" }]
     },
 
     components: {
@@ -411,18 +391,12 @@
         file_tag: '',
         fileUploadFileName: '',
 
-
-
-
         //boolean
         isLoaderActive: false,
         isUploadFileModalActive: false,
         isDeleteFileModalActive: false,
         isSharedFileModalActive: false,
         isRecipentSelectAll: false,
-        // updateModalState: false,
-
-
 
         //object
         fileToBeDeleted: {},
@@ -430,7 +404,6 @@
         fileToBeShared: {},
 
         //collection
-
         fileList: [],
         filteredFileList: [],
         userList: [],
@@ -445,6 +418,10 @@
     computed: {
       chunkedUserFileData() {
         return _.chunk(this.filteredFileList, 4)
+      },
+
+      isFileTagLoaded() {
+        return this.fileTagOption.length;
       },
 
 
@@ -488,6 +465,13 @@
     }, //computed
 
     methods: {
+
+
+      getFileTagNameById(id) {
+        let fileTag = this.fileTagOption.find(x => x._id === id)
+        return `${fileTag.file_tag}`
+      },
+
 
       isUserRecipient(id) {
         //determines the shared user to be display

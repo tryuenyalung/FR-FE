@@ -9,7 +9,7 @@ export default {
     "API_PROFILE" : "/api/v1/files/profile",
     "API_DOCUMENT" : "/api/v1/files/document",
     "API_PRESENTATION" : "/api/v1/files/presentation",
-    "API_SPEADSHEET" : "/api/v1/files/spreadsheet",
+    "API_SPREADSHEET" : "/api/v1/files/spreadsheet",
 
 
     "BUCKET_IMAGE" : "image",
