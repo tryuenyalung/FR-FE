@@ -238,8 +238,8 @@
 
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label">Gender</label>
-                                        <p>{{this.$store.state.user_details.user.gender}}</p>
+                                        <label class="label">Sex</label>
+                                        <p class="is-uppercase">{{this.$store.state.user_details.user.gender}}</p>
                                     </div> 
                                 </div>
                             </div><!--columns-->

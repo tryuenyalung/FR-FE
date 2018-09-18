@@ -105,7 +105,7 @@
 
                         <div class="columns">
                             <div class="column">
-                                <a :href="`dashboard/efile/view?id=${efileToBeApprovedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a>
+                                <a @click="toggleApproveModal" class="is-medium button is-danger is-outlined is-fullwidth">Cancel</a>
                             </div>
 
                             <div class="column">
@@ -161,8 +161,9 @@
                     </td>
 
                     <td>{{efile.private_doc}}</td>
-                    <td>{{efile.created_at}}</td>
-
+                    <td>{{efile.created_at | dateTimeFormatter  }}</td>
+                    
+                    <td class="has-text-centered"><a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-eye button is-danger  button is-danger is-outlined is-fullwidth"></a></td>
                     <td class="has-text-centered"><button @click="getEfileDetailsToBeApproved(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-file-signature button is-danger  is-outlined is-fullwidth"></button></td>
                     <td class="has-text-centered"><button @click="getEfileDetailsToBeRejected(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-times-circle button is-danger is-outlined is-fullwidth"></button></td>
                     <!-- <td class="has-text-centered"> <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-search-plus button is-danger is-outlined is-fullwidth" /></td> -->
@@ -231,13 +232,14 @@
     import axios from 'axios'
     import keys from '~/components/keys.js'
     import loader from '~/components/loader'
-
+    import moment from 'moment'
 
     export default {
 
         components: {
             loader
         },
+
 
         created(){
             this.toggleLoader()
@@ -262,6 +264,16 @@
                     this.toggleLoader()
                     alert(err)
                 })
+        },
+
+
+        filters: {
+
+            dateTimeFormatter: function (value) {
+                if (value) 
+                return moment(String(value)).format('MMMM Do YYYY, h:mm:ss a')
+            }
+
         },
 
         data(){

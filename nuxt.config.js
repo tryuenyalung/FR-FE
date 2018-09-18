@@ -48,6 +48,7 @@ module.exports = {
   plugins: [
     '~plugins/vue-notification',
     '~plugins/veeValidate',
+    // '~plugins/moment',
     { src: '~/plugins/localStorage.js', ssr: false }
   ],
 

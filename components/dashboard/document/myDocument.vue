@@ -33,7 +33,7 @@
 
                     <div class="control select is-fullwidth">
                       <select v-model="file_tag">
-                        <option disabled value="">Select File tag</option>
+                        <option disabled value="">Select File category</option>
                         <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{
                           file.file_tag }}</option>
                       </select>
@@ -175,7 +175,7 @@
                 <span>
                   <div class="select is-fullwidth ">
                     <select v-model="file_tag">
-                      <option disabled value="">Select File tag</option>
+                      <option disabled value="">Select File category</option>
                       <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{
                         file.file_tag }}</option>
                     </select>
@@ -293,7 +293,7 @@
 
             <footer class="card-footer">
               <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
-               <a target="_blank" :href="`${API_DOCUMENT}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
+              <a target="_blank" :href="`${API_DOCUMENT}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
               <a @click="getFileDetailsToBeShared(`${file.filename}`,`${file.metadata.name}`,`${file.metadata.tag}`)"
                 class="card-footer-item fas fa-share-alt" />
             </footer>
@@ -791,6 +791,7 @@
 
       validateUpdateFileForm() {
 
+
         if (!_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag)) {
           this.shareFiles()
         } else {
@@ -802,7 +803,16 @@
 
       validateUploadFileForm() {
 
-        if (!_.isEmpty(this.fileUploadFileName) && !_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag)) {
+        let validExt = ['doc', 'dot', 'wbk', 'docx', 'docm', 'dotx', 'dotm', 'docb']
+        let fileExt = this.fileUploadFileName.toLowerCase().split('.').pop()
+
+        if (validExt.includes(fileExt) === false) {
+          this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',
+            'Invalid file type'))
+
+        } else if (!_.isEmpty(this.fileUploadFileName) && !_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag) &&
+          validExt.includes(
+            fileExt)) {
           this.uploadFile()
         } else {
           this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',

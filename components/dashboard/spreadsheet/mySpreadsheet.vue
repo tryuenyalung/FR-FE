@@ -33,7 +33,7 @@
 
                     <div class="control select is-fullwidth">
                       <select v-model="file_tag">
-                        <option disabled value="">Select File tag</option>
+                        <option disabled value="">Select File category</option>
                         <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{
                           file.file_tag }}</option>
                       </select>
@@ -175,7 +175,7 @@
                 <span>
                   <div class="select is-fullwidth ">
                     <select v-model="file_tag">
-                      <option disabled value="">Select File tag</option>
+                      <option disabled value="">Select File category</option>
                       <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{
                         file.file_tag }}</option>
                     </select>
@@ -801,9 +801,19 @@
 
       },
 
+
       validateUploadFileForm() {
 
-        if (!_.isEmpty(this.fileUploadFileName) && !_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag)) {
+        let validExt = ['xls', 'xlt', 'xlm', 'xlsx', 'xlsm', 'xltx', 'xltm', 'xlsb', 'xla', 'xlam', 'xll', 'xlw']
+        let fileExt = this.fileUploadFileName.toLowerCase().split('.').pop()
+
+        if (validExt.includes(fileExt) === false) {
+          this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',
+            'Invalid file type'))
+
+        } else if (!_.isEmpty(this.fileUploadFileName) && !_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag) &&
+          validExt.includes(
+            fileExt)) {
           this.uploadFile()
         } else {
           this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',
@@ -811,6 +821,7 @@
         }
 
       },
+
 
 
       uploadFile() {

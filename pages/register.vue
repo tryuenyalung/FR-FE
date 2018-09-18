@@ -108,11 +108,11 @@
                   <div class="columns">
 
                     <div class="column">
-                      <p for="label">Gender</p>
+                      <p for="label">Sex</p>
                       <div class="select is-fullwidth" :class="{ 'is-danger': errors.has('gender') }">
                         <select name="gender" v-model="gender" v-validate="'required'">
-                          <option value="">Select Gender</option>
-                          <option :key="gender" v-for="gender in genderOption" :value="gender">{{ gender }}</option>
+                          <option value="">Please select</option>
+                          <option class="is-uppercase" :key="gender" v-for="gender in genderOption" :value="gender">{{ gender }}</option>
                         </select>
                       </div>
                       <small class="has-text-danger">{{ errors.first('gender') }}</small>
