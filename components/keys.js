@@ -10,6 +10,7 @@ export default {
     "API_DOCUMENT" : "/api/v1/files/document",
     "API_PRESENTATION" : "/api/v1/files/presentation",
     "API_SPREADSHEET" : "/api/v1/files/spreadsheet",
+    "API_PDF" : "/api/v1/files/pdf",
 
 
     "BUCKET_IMAGE" : "image",
@@ -18,4 +19,5 @@ export default {
     "BUCKET_PRESENTATION" : "presentation",
     "BUCKET_SPREADSHEET" : "spreadsheet",
     "BUCKET_DOCUMENT" : "document",
+    "BUCKET_PDF" : "pdf"
 }

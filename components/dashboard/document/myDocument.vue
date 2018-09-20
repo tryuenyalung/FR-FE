@@ -841,7 +841,7 @@
 
             this.toggleUploadFileModal()
             this.getMyFiles()
-            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully upload..'))
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Word successfully upload..'))
             this.fileUploadFileName = ''
             this.file_name = ''
             this.file_tag = ''

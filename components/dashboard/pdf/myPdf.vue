@@ -151,7 +151,7 @@
 
               <label class="file-label">
                 <input class="file-input" type="file" name="file" ref="inputImage" v-on:change="displayFileInfoOnForm"
-                  accept=".xls, .xlt , .xlm, .xlsx, .xlsm , .xltx , .xltm , .xlsb , .xla , .xlam, .xll  .xlw">
+                  accept=".pdf">
                 <span class="file-cta is-borderless">
                   <span class="file-icon">
                     <i class="fas fa-upload"></i>
@@ -284,17 +284,16 @@
 
             <div class="card-image">
               <div class="has-text-centered">
-                <i class="fa-10x far fa-file-excel has-text-danger"></i>
+                <i class="fa-10x fas fa-file-pdf has-text-danger"></i>
                 <br>
                 <br>
               </div>
             </div>
 
 
-
             <footer class="card-footer">
               <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
-              <a target="_blank" :href="`${API_SPREADSHEET}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
+              <a target="_blank" :href="`${API_PDF}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
               <a @click="getFileDetailsToBeShared(`${file.filename}`,`${file.metadata.name}`,`${file.metadata.tag}`)"
                 class="card-footer-item fas fa-share-alt" />
             </footer>
@@ -375,7 +374,7 @@
 
     data() {
       return {
-        API_SPREADSHEET: `${keys.BASE_URL}${keys.API_SPREADSHEET}/`,
+        API_PDF: `${keys.BASE_URL}${keys.API_PDF}/`,
 
 
         //numeric
@@ -561,7 +560,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_SPREADSHEET}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PDF}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -639,7 +638,7 @@
 
         this.fileToBeDeleted = {
           filename: filename,
-          url: `${this.API_SPREADSHEET}${filename}`,
+          url: `${this.API_PDF}${filename}`,
         }
 
         this.toggleDeleteFileModal()
@@ -662,7 +661,7 @@
 
         this.fileToBeShared = {
           filename: filename,
-          bucket: keys.BUCKET_SPREADSHEET
+          bucket: keys.BUCKET_PDF
         }
         this.toggleUpdateFileModal()
       },
@@ -675,7 +674,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_SPREADSHEET}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PDF}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -701,7 +700,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_SPREADSHEET}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PDF}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -727,7 +726,7 @@
 
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_SPREADSHEET}&page=${this.filePageNo}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PDF}&page=${this.filePageNo}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -764,7 +763,7 @@
 
           const config = {
             method: 'GET',
-            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_SPREADSHEET}&page=${this.filePageNo}&tag=${this.fileSearchInput}`,
+            url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PDF}&page=${this.filePageNo}&tag=${this.fileSearchInput}`,
             headers: {
               "Authorization": `Bearer ${this.$store.state.user_details.token}`
             }
@@ -804,7 +803,7 @@
 
       validateUploadFileForm() {
 
-        let validExt = ['xls', 'xlt', 'xlm', 'xlsx', 'xlsm', 'xltx', 'xltm', 'xlsb', 'xla', 'xlam', 'xll', 'xlw']
+        let validExt = ['pdf']
         let fileExt = this.fileUploadFileName.toLowerCase().split('.').pop()
 
         if (validExt.includes(fileExt) === false) {
@@ -823,14 +822,13 @@
       },
 
 
-
       uploadFile() {
         this.toggleLoader()
         let formData = new FormData(uploadFileForm) //new FormData(formNameHere)
 
         const config = {
           method: 'POST',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_SPREADSHEET}&tag=${this.file_tag}&name=${this.file_name}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PDF}&tag=${this.file_tag}&name=${this.file_name}`,
           data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -843,7 +841,7 @@
 
             this.toggleUploadFileModal()
             this.getMyFiles()
-            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Spreadsheet successfully upload..'))
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Pdf successfully upload..'))
             this.fileUploadFileName = ''
             this.file_name = ''
             this.file_tag = ''
@@ -886,7 +884,7 @@
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_SPREADSHEET}&name=${this.fileSearchInput}`,
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_PDF}&name=${this.fileSearchInput}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }
@@ -910,7 +908,7 @@
         this.toggleLoader()
         const config = {
           method: 'GET',
-          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_SPREADSHEET}&filename=${this.fileToBeDeleted.filename}`,
+          url: `${keys.BASE_URL}/api/v1/files/delete?bucket=${keys.BUCKET_PDF}&filename=${this.fileToBeDeleted.filename}`,
           headers: {
             "Authorization": `Bearer ${this.$store.state.user_details.token}`
           }

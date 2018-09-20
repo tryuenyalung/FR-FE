@@ -15,6 +15,7 @@
                 <p class="menu-label">Files</p>
                 <ul class="menu-list">
                     <li @click="changeActiveContent('efile')" ><a :class="{'is-active subtitle is-5' : this.$store.state.sidebar.activeContent === 'efile' }" >Efiles</a></li>
+                    <li @click="changeActiveContent('pdf')" ><a :class="{'is-active subtitle is-5' : this.$store.state.sidebar.activeContent === 'pdf' }" >Pdfs</a></li>
                     <li @click="changeActiveContent('document')" ><a :class="{'is-active subtitle is-5' : this.$store.state.sidebar.activeContent === 'document' }" >Words</a></li>
                     <li @click="changeActiveContent('spreadsheet')" ><a :class="{'is-active subtitle is-5' : this.$store.state.sidebar.activeContent === 'spreadsheet' }" >Spreadsheets</a></li>
                     <li @click="changeActiveContent('presentation')" ><a :class="{'is-active subtitle is-5' : this.$store.state.sidebar.activeContent === 'presentation' }" >Presentations</a></li>

@@ -163,7 +163,8 @@
                     <td>{{efile.private_doc}}</td>
                     <td>{{efile.created_at | dateTimeFormatter  }}</td>
                     
-                    <td class="has-text-centered"><a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-eye button is-danger  button is-danger is-outlined is-fullwidth"></a></td>
+                    <!-- <td class="has-text-centered"><a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-eye button is-danger  button is-danger is-outlined is-fullwidth"></a></td> -->
+                    <td class="has-text-centered"><a :href="`/FR/dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-eye button is-danger  button is-danger is-outlined is-fullwidth"></a></td>
                     <td class="has-text-centered"><button @click="getEfileDetailsToBeApproved(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-file-signature button is-danger  is-outlined is-fullwidth"></button></td>
                     <td class="has-text-centered"><button @click="getEfileDetailsToBeRejected(`${efile._id}`, `${efile.name}`)" class="is-medium fas fa-times-circle button is-danger is-outlined is-fullwidth"></button></td>
                     <!-- <td class="has-text-centered"> <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="is-medium fas fa-search-plus button is-danger is-outlined is-fullwidth" /></td> -->

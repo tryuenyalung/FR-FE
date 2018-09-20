@@ -19,6 +19,7 @@
 
       <div :class="{'is-active' : this.isNavbarMenuActive}" class="navbar-menu has-text-centered is-hidden-desktop">
         <a @click="navigateAndCloseNavbar('efile')" class="navbar-item">Efiles</a>
+        <a @click="navigateAndCloseNavbar('pdf')" class="navbar-item">Pdf</a>
         <a @click="navigateAndCloseNavbar('document')" class="navbar-item">Documents</a>
         <a @click="navigateAndCloseNavbar('spreadsheet')" class="navbar-item">Spreadsheet</a>
         <a @click="navigateAndCloseNavbar('presentation')" class="navbar-item">Presentation</a>

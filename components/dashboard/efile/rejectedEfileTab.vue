@@ -27,7 +27,8 @@
 
           <div class="columns">
             <div class="column">
-              <a :href="`dashboard/efile/view?id=${efileToBeDeletedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a>
+              <a :href="`/FR/dashboard/efile/view?id=${efileToBeDeletedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a>
+              <!-- <a :href="`dashboard/efile/view?id=${efileToBeDeletedDetails.id}`" target="_blank" class="is-medium button is-danger is-outlined is-fullwidth">View</a> -->
             </div>
 
             <div class="column">
