@@ -289,6 +289,7 @@
             </div>
 
             <footer class="card-footer">
+              <a @click="urlToBase64(`${API_IMAGE}${file.filename}`, `${file.metadata}`), `${file.filename}`" class="card-footer-item" />
               <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
               <a @click="copyToClipBoard(`${API_IMAGE}${file.filename}`)" class="card-footer-item fas fa-copy" />
               <a target="_blank" :href="`${API_IMAGE}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
@@ -400,7 +401,7 @@
         fileToBeDeleted: {},
         fileToBeUpdated: {},
         fileToBeShared: {},
-
+        sample:null,
         //collection
         fileList: [],
         filteredFileList: [],
@@ -466,7 +467,12 @@
 
 
       getFileTagNameById(id) {
+        
         let fileTag = this.fileTagOption.find(x => x._id === id)
+
+        if(_.isNil(fileTag)){
+          return "gagi"
+        }
         return `${fileTag.file_tag}`
       },
 
@@ -936,7 +942,131 @@
 
         this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Path copy to clipboard..'))
 
-      }
+      },
+
+      duplicateFile(url, filename){
+        
+
+
+      this.urlToBase64(url, filename)
+
+      
+      for(var pair of this.sample.entries()) {
+            console.log(pair[0]+ ', '+ pair[1]); 
+        }
+    
+
+
+
+        const config = {
+          method: 'POST',
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.file_tag}&name=${this.file_name}`,
+          data: this.urlToBase64(url, filename),
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`,
+          }
+        }
+
+        axios(config)
+          .then(res => {
+
+            this.getMyFiles()
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully duplicated..'))
+            this.toggleLoader()
+          })
+
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+          })
+
+      },
+
+
+      urlToBase64(url, fileMetadata, filename) {
+
+        const config = {
+          method: 'GET',
+          url: url,
+          responseType: 'arraybuffer'
+        }
+
+        axios(config)
+          .then(res => {
+
+            let image = btoa(
+              new Uint8Array(res.data)
+              .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            );
+
+            let base64 = `data:${res.headers['content-type'].toLowerCase()};base64,${image}`
+            console.log(base64)
+
+            let fileFromB64 = this.base64toFile(base64, filename)
+
+            return this.putFileToForm(fileFromB64, fileMetadata, filename)
+
+          })
+          .catch(err => {
+            alert(err)
+          })
+
+      },
+
+      base64toFile(base64, filename) {
+        let arr = base64.split(','),
+          mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]),
+          n = bstr.length,
+          u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n)
+        }
+        return new File([u8arr], filename, {
+          type: mime
+        })
+      },
+
+    putFileToForm(file, fileMetadata, filename) {
+        let formData = new FormData() //new FormData(formNameHere)
+
+        //add <input type='file' value =''  name='file'  >
+        formData.append('file', file, fileMetadata.name)
+        formData.append('tag', fileMetadata.tag);
+        formData.append('name', `copy of ${fileMetadata.name}`);
+
+        // check the value of formData
+        for(var pair of formData.entries()) {
+            console.log(pair[0]+ ', '+ pair[1]); 
+        }
+
+            const config = {
+          method: 'POST',
+          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.file_tag}&name=${this.file_name}`,
+          data:  formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`,
+          }
+        }
+
+        axios(config)
+          .then(res => {
+
+            this.getMyFiles()
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully duplicated..'))
+            this.toggleLoader()
+          })
+
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+          })
+
+        // return formData
+
+      },
 
 
     }

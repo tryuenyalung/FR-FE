@@ -1,7 +1,11 @@
 export default {
     
     "BASE_URL": "https://file-repo.herokuapp.com",
-    "TINYMCE_STYLE" : "body {padding: 3em;}, p{padding: 0 !important;}",
+
+    "TINYMCE_STYLE" : 
+        // "https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css",
+        "body {padding: 3em;}, p{padding: 0 !important;}"
+    ,
     
 
     "API_SIGNATURE" : "/api/v1/files/signature",

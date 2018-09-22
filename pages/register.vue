@@ -321,9 +321,9 @@
         formData.append('file', this.signatureImage, this.signatureImage.name)
 
         // check the value of formData
-        // for(var pair of formData.entries()) {
-        //     console.log(pair[0]+ ', '+ pair[1]); 
-        // }
+        for(var pair of formData.entries()) {
+            console.log(pair[0]+ ', '+ pair[1]); 
+        }
         return formData
       },
 
