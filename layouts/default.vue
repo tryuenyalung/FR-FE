@@ -34,8 +34,7 @@ $turquoise: #26a69a;
 
 // 6. Import the rest of Bulma
 @import "./../node_modules/bulma/bulma";
-
-
+@import './../node_modules/bulma-tooltip/src/sass/index';
 
 // .tab-padding{
 //   padding-top: 20px;

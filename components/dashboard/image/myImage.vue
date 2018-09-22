@@ -29,7 +29,7 @@
                 <div class="column">
 
                   <div class="field">
-                    <label class="has-text-weight-semibold">File Tag:</label>
+                    <label class="has-text-weight-semibold">File Category:</label>
 
                     <div class="control select is-fullwidth">
                       <select v-model="file_tag">
@@ -245,7 +245,7 @@
         <div class="column">
           <div class="select is-fullwidth ">
             <select @change="filterFileList()" v-model="filterFileBy">
-              <option disabled value="">Filter by tag</option>
+              <option disabled value="">Filter by category</option>
               <option value="">All</option>
               <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{ file.file_tag }}</option>
             </select>
@@ -288,13 +288,37 @@
               </figure>
             </div>
 
+            <div class="columns is-marginless">
+              <div class="column">
+                <small> <b>Upload Date</b> : <em>{{file.uploadDate | dateTimeFormatter }}</em> </small>
+              </div>
+            </div>
+
             <footer class="card-footer">
-              <a @click="urlToBase64(`${API_IMAGE}${file.filename}`, `${file.metadata}`), `${file.filename}`" class="card-footer-item" />
-              <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
-              <a @click="copyToClipBoard(`${API_IMAGE}${file.filename}`)" class="card-footer-item fas fa-copy" />
-              <a target="_blank" :href="`${API_IMAGE}${file.filename}`" class="card-footer-item fas fa-external-link-alt" />
+
+              <a @click="getFileDetailsToBeDuplicated(`${API_IMAGE}${file.filename}`, `${file.filename}`, `${file.metadata.name}`, `${file.metadata.tag}`)"
+                class="card-footer-item tooltip is-tooltip-bottom" data-tooltip="Clone">
+                <i class="fas fa-clone"></i>
+              </a>
+
+              <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item tooltip is-tooltip-bottom"
+                data-tooltip="Delete">
+                <i class="fas fa-trash-alt"></i>
+              </a>
+              <a @click="copyToClipBoard(`${API_IMAGE}${file.filename}`)" class="card-footer-item tooltip is-tooltip-bottom"
+                data-tooltip="Copy Path">
+                <i class="fas fa-copy"></i>
+              </a>
+
+              <a target="_blank" :href="`${API_IMAGE}${file.filename}`"  class="card-footer-item tooltip is-tooltip-bottom"
+                data-tooltip="View">
+                <i class=" fas fa-external-link-alt"></i>
+              </a>
               <a @click="getFileDetailsToBeShared(`${file.filename}`,`${file.metadata.name}`,`${file.metadata.tag}`)"
-                class="card-footer-item fas fa-share-alt" />
+                class="card-footer-item tooltip is-tooltip-bottom" data-tooltip="Share">
+                <i class="fas fa-share-alt"></i>
+              </a>
+              
             </footer>
 
 
@@ -355,6 +379,7 @@
 <script>
   import _ from "lodash"
   import axios from 'axios'
+  import moment from 'moment'
   import keys from '~/components/keys.js'
   import loader from '~/components/loader'
 
@@ -401,7 +426,7 @@
         fileToBeDeleted: {},
         fileToBeUpdated: {},
         fileToBeShared: {},
-        sample:null,
+        fileDuplicateUrl: '',
         //collection
         fileList: [],
         filteredFileList: [],
@@ -413,6 +438,14 @@
       } //return
     }, //data
 
+filters: {
+
+      dateTimeFormatter: function (value) {
+        if (value)
+          return moment(String(value)).format('MMM Do YY')
+      }
+
+    },
 
     computed: {
       chunkedUserFileData() {
@@ -463,14 +496,16 @@
 
     }, //computed
 
+
+
     methods: {
 
 
       getFileTagNameById(id) {
-        
+
         let fileTag = this.fileTagOption.find(x => x._id === id)
 
-        if(_.isNil(fileTag)){
+        if (_.isNil(fileTag)) {
           return "gagi"
         }
         return `${fileTag.file_tag}`
@@ -512,7 +547,8 @@
           if (this.recipientListIds.includes(x._id)) {
 
             let tempObj = {
-              id: x._id
+              id: x._id,
+              sharedDate:  moment(Date.now()).format()
             }
             userIds.push(tempObj)
 
@@ -668,6 +704,14 @@
           bucket: keys.BUCKET_IMAGE
         }
         this.toggleUpdateFileModal()
+      },
+
+      getFileDetailsToBeDuplicated(url, filename, file_name, file_tag) {
+        this.toggleLoader()
+        let duplicateName = `${file_name} (${ Math.floor(Date.now()) })`
+        this.fileDuplicateUrl =
+          `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${file_tag}&name=${duplicateName}`
+        this.urlToBase64(url)
       },
 
       firstPage() {
@@ -944,51 +988,12 @@
 
       },
 
-      duplicateFile(url, filename){
-        
 
 
-      this.urlToBase64(url, filename)
-
-      
-      for(var pair of this.sample.entries()) {
-            console.log(pair[0]+ ', '+ pair[1]); 
-        }
-    
-
-
-
-        const config = {
-          method: 'POST',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.file_tag}&name=${this.file_name}`,
-          data: this.urlToBase64(url, filename),
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Authorization": `Bearer ${this.$store.state.user_details.token}`,
-          }
-        }
-
-        axios(config)
-          .then(res => {
-
-            this.getMyFiles()
-            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully duplicated..'))
-            this.toggleLoader()
-          })
-
-          .catch(err => {
-            this.toggleLoader()
-            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
-          })
-
-      },
-
-
-      urlToBase64(url, fileMetadata, filename) {
-
+      urlToBase64(fileUrlSrc) {
         const config = {
           method: 'GET',
-          url: url,
+          url: fileUrlSrc,
           responseType: 'arraybuffer'
         }
 
@@ -1001,11 +1006,10 @@
             );
 
             let base64 = `data:${res.headers['content-type'].toLowerCase()};base64,${image}`
-            console.log(base64)
 
-            let fileFromB64 = this.base64toFile(base64, filename)
+            let fileFromB64 = this.base64toFile(base64, "dummyString")
 
-            return this.putFileToForm(fileFromB64, fileMetadata, filename)
+            return this.putFileToForm(fileFromB64)
 
           })
           .catch(err => {
@@ -1028,23 +1032,21 @@
         })
       },
 
-    putFileToForm(file, fileMetadata, filename) {
+      putFileToForm(file) {
         let formData = new FormData() //new FormData(formNameHere)
 
         //add <input type='file' value =''  name='file'  >
-        formData.append('file', file, fileMetadata.name)
-        formData.append('tag', fileMetadata.tag);
-        formData.append('name', `copy of ${fileMetadata.name}`);
+        formData.append('file', file, "sample")
 
         // check the value of formData
-        for(var pair of formData.entries()) {
-            console.log(pair[0]+ ', '+ pair[1]); 
-        }
+        // for (var pair of formData.entries()) {
+        //   console.log(pair[0] + ', ' + pair[1]);
+        // }
 
-            const config = {
+        const config = {
           method: 'POST',
-          url: `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${this.file_tag}&name=${this.file_name}`,
-          data:  formData,
+          url: this.fileDuplicateUrl,
+          data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
             "Authorization": `Bearer ${this.$store.state.user_details.token}`,

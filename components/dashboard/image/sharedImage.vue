@@ -27,7 +27,7 @@
         <div class="column">
           <div class="select is-fullwidth ">
             <select @change="filterFileList()" v-model="filterFileBy">
-              <option disabled value="">Filter by tag</option>
+              <option disabled value="">Filter by category</option>
               <option value="">All</option>
               <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{ file.file_tag }}</option>
             </select>
@@ -69,8 +69,8 @@
 
             <div class="padding is-10">
               <span v-if="isUserListLoaded">
-                <small>Shared by: <b> {{getUserInfoById(file.metadata.owner)}}</b> </small>
-
+                <p><small><b>Shared by:</b> <em> {{getUserInfoById(file.metadata.owner)}}</em> </small></p>
+                <small><b>Date shared:</b> <em>   {{ getFileSharedDate(file.metadata.sharedUser) | dateTimeFormatter }}</em> </small>
               </span>
             </div>
 
@@ -140,6 +140,7 @@
 <script>
   import _ from "lodash"
   import axios from 'axios'
+   import moment from 'moment'
   import keys from '~/components/keys.js'
   import loader from '~/components/loader'
 
@@ -191,7 +192,14 @@
       } //return
     }, //data
 
+filters: {
 
+      dateTimeFormatter: function (value) {
+        if (value)
+          return moment(String(value)).format('MMM Do YY')
+      }
+
+    },
     computed: {
       chunkedUserFileData() {
         return _.chunk(this.filteredFileList, 4)
@@ -248,6 +256,13 @@
       getUserInfoById(id) {
         let userInfo = this.userList.find(x => x._id === id)
         return `${userInfo.name.first_name} ${userInfo.name.middle_name} ${userInfo.name.last_name}`
+      },
+
+      getFileSharedDate(arr) {
+        console.log(JSON.stringify(arr));
+        let sharedUserInfo = arr.find(x => x.id === this.$store.state.user_details.user._id)
+        return sharedUserInfo.sharedDate
+        // return `${userInfo.name.first_name} ${userInfo.name.middle_name} ${userInfo.name.last_name}`
       },
 
       getListOfUsers() {
