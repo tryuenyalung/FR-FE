@@ -711,7 +711,7 @@ filters: {
         let duplicateName = `${file_name} (${ Math.floor(Date.now()) })`
         this.fileDuplicateUrl =
           `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_IMAGE}&tag=${file_tag}&name=${duplicateName}`
-        this.urlToBase64(url)
+        this.urlToBase64(url,filename)
       },
 
       firstPage() {
@@ -990,7 +990,7 @@ filters: {
 
 
 
-      urlToBase64(fileUrlSrc) {
+      urlToBase64(fileUrlSrc, originalFileName) {
         const config = {
           method: 'GET',
           url: fileUrlSrc,
@@ -1007,9 +1007,9 @@ filters: {
 
             let base64 = `data:${res.headers['content-type'].toLowerCase()};base64,${image}`
 
-            let fileFromB64 = this.base64toFile(base64, "dummyString")
+            let fileFromB64 = this.base64toFile(base64, originalFileName)
 
-            return this.putFileToForm(fileFromB64)
+            return this.putFileToForm(fileFromB64,originalFileName)
 
           })
           .catch(err => {
@@ -1032,11 +1032,11 @@ filters: {
         })
       },
 
-      putFileToForm(file) {
+      putFileToForm(file, filename) {
         let formData = new FormData() //new FormData(formNameHere)
 
         //add <input type='file' value =''  name='file'  >
-        formData.append('file', file, "sample")
+        formData.append('file', file, filename)
 
         // check the value of formData
         // for (var pair of formData.entries()) {
