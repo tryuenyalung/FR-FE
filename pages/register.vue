@@ -124,7 +124,7 @@
                       <div class="select is-fullwidth" :class="{ 'is-danger': errors.has('position') }">
                         <select name="position" v-model="position" v-validate="'required'">
                           <option value="">Select Position</option>
-                          <option :key="position" v-for="position in positionOption" :value="position">{{ position }}</option>
+                          <option :key="position._id" v-for="position in filteredPosition" :value="position._id">{{ position.position }}</option>
                         </select>
                         <small class="has-text-danger">{{ errors.first('position') }}</small>
                       </div>
@@ -137,7 +137,7 @@
                       <div class="select is-fullwidth" :class="{ 'is-danger': errors.has('department') }">
                         <select name="department" v-model="department" v-validate="'required'" required>
                           <option value="">Select Department</option>
-                          <option :key="department" v-for="department in departmentOption" :value="department">{{ department }}</option>
+                          <option :key="department._id" v-for="department in departmentOption" :value="department._id">{{ department.department }}</option>
                         </select>
                         <small class="has-text-danger">{{ errors.first('department') }}</small>
                       </div>
@@ -213,6 +213,11 @@
         this.$router.push('/dashboard')
       }
     },
+
+    mounted() {
+      this.getPositionList()
+      this.getDepartmentList()
+    },
     
     data() {
 
@@ -239,14 +244,10 @@
           "male",
           "female"
         ],
-        departmentOption: [
-          "Department of Something",
-          "Department of Another"
-        ],
-        positionOption: [
-          "Admin Aid 1",
-          "Admin Aid 2"
-        ],
+
+        departmentOption: [],
+
+        positionOption: [],
         //////////////////////////////////
 
         signatureImage: null,
@@ -266,6 +267,13 @@
     },
 
     computed: {
+
+filteredPosition() {
+        return this.positionOption.filter(x => {
+          return x.department === this.department
+         
+        })
+      }, //filteredUserList
 
 
     },
@@ -402,8 +410,43 @@
           this.signatureImage === null ? this.$notify(this.showNotif('warn', 'Warning', 'fa-exclamation-triangle',
             'please fill up the form')) : null
         })
-      }
+      },
 
+
+    getPositionList() {
+
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/positions`
+        }
+
+
+        axios(config)
+          .then(res => {
+            this.positionOption = res.data
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+          })
+      },
+
+       getDepartmentList() {
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/departments`
+        }
+
+
+        axios(config)
+          .then(res => {
+            this.departmentOption = res.data
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+          })
+      },
 
 
 
