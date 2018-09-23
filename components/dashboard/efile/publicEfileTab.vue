@@ -57,6 +57,9 @@
               <!-- <a :href="`dashboard/efile/view?id=${efile._id}`" target="_blank" class="button is-danger is-outlined">View</a> -->
               <a :href="`/FR/dashboard/efile/view?id=${efile._id}`" target="_blank" class="button is-danger is-outlined">View</a>
             </td>
+             <td class="has-text-centered">
+              <a :href="`${API_PDF}download/${efile._id}`" target="_blank" class="button is-danger is-outlined">Dowload</a>
+            </td>
           </tr>
         </tbody>
 
@@ -167,6 +170,7 @@
 
     data() {
       return {
+        API_PDF: `${keys.BASE_URL}${keys.API_PDF}/`,
 
         isLoaderActive: false,
         publicEfileList: [],
