@@ -29,7 +29,7 @@
                 <div class="column">
 
                   <div class="field">
-                    <label class="has-text-weight-semibold">File Tag:</label>
+                    <label class="has-text-weight-semibold">File Category:</label>
 
                     <div class="control select is-fullwidth">
                       <select v-model="file_tag">
@@ -207,7 +207,6 @@
 
           <h4 class="subtitle is-4 has-text-centered">Are you sure you want to delete this file?</h4>
 
-          <img :src="`${this.fileToBeDeleted.url}`" alt="">
           <div>
             <button @click="deleteFile()" class="button is-danger is-pulled-right is-outlined">Delete</button>
             <br>
@@ -245,7 +244,7 @@
         <div class="column">
           <div class="select is-fullwidth ">
             <select @change="filterFileList()" v-model="filterFileBy">
-              <option disabled value="">Filter by tag</option>
+              <option disabled value="">Filter by category</option>
               <option value="">All</option>
               <option :key="file._id" v-for="file in fileTagOption" :value="file._id">{{ file.file_tag }}</option>
             </select>
@@ -290,12 +289,35 @@
               </div>
             </div>
 
+            <div class="columns is-marginless">
+              <div class="column">
+                <small> <b>Upload Date</b> : <em>{{file.uploadDate | dateTimeFormatter }}</em> </small>
+              </div>
+            </div>
 
             <footer class="card-footer">
-              <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item fas fa-trash-alt" />
-              <a target="_blank" :href="`${API_DOCUMENT}${file.filename}`" class="card-footer-item fas fa-cloud-download-alt" />
+
+              <a @click="getFileDetailsToBeDuplicated(`${API_DOCUMENT}${file.filename}`, `${file.filename}`, `${file.metadata.name}`, `${file.metadata.tag}`)"
+                class="card-footer-item tooltip is-tooltip-bottom" data-tooltip="Clone">
+                <i class="fas fa-clone"></i>
+              </a>
+
+              <a @click="getFileDetailsToBeDeleted(`${file.filename}`, `${file.metadata}` )" class="card-footer-item tooltip is-tooltip-bottom"
+                data-tooltip="Delete">
+                <i class="fas fa-trash-alt"></i>
+              </a>
+
+
+              <a target="_blank" :href="`${API_DOCUMENT}${file.filename}`" class="card-footer-item tooltip is-tooltip-bottom"
+                data-tooltip="Download">
+                <i class=" fas fa-cloud-download-alt"></i>
+              </a>
+
               <a @click="getFileDetailsToBeShared(`${file.filename}`,`${file.metadata.name}`,`${file.metadata.tag}`)"
-                class="card-footer-item fas fa-share-alt" />
+                class="card-footer-item tooltip is-tooltip-bottom" data-tooltip="Share">
+                <i class="fas fa-share-alt"></i>
+              </a>
+
             </footer>
 
 
@@ -356,6 +378,7 @@
 <script>
   import _ from "lodash"
   import axios from 'axios'
+  import moment from 'moment'
   import keys from '~/components/keys.js'
   import loader from '~/components/loader'
 
@@ -402,7 +425,7 @@
         fileToBeDeleted: {},
         fileToBeUpdated: {},
         fileToBeShared: {},
-
+        fileDuplicateUrl: '',
         //collection
         fileList: [],
         filteredFileList: [],
@@ -414,6 +437,14 @@
       } //return
     }, //data
 
+    filters: {
+
+      dateTimeFormatter: function (value) {
+        if (value)
+          return moment(String(value)).format('MMM Do YY')
+      }
+
+    },
 
     computed: {
       chunkedUserFileData() {
@@ -464,11 +495,18 @@
 
     }, //computed
 
+
+
     methods: {
 
 
       getFileTagNameById(id) {
+
         let fileTag = this.fileTagOption.find(x => x._id === id)
+
+        if (_.isNil(fileTag)) {
+          return "gagi"
+        }
         return `${fileTag.file_tag}`
       },
 
@@ -508,7 +546,8 @@
           if (this.recipientListIds.includes(x._id)) {
 
             let tempObj = {
-              id: x._id
+              id: x._id,
+              sharedDate: moment(Date.now()).format()
             }
             userIds.push(tempObj)
 
@@ -666,6 +705,14 @@
         this.toggleUpdateFileModal()
       },
 
+      getFileDetailsToBeDuplicated(url, filename, file_name, file_tag) {
+        this.toggleLoader()
+        let duplicateName = `${file_name} (${ Math.floor(Date.now()) })`
+        this.fileDuplicateUrl =
+          `${keys.BASE_URL}/api/v1/files?id=${this.$store.state.user_details.user._id}&bucket=${keys.BUCKET_DOCUMENT}&tag=${file_tag}&name=${duplicateName}`
+        this.urlToBase64(url, filename)
+      },
+
       firstPage() {
 
         this.toggleLoader()
@@ -791,7 +838,6 @@
 
       validateUpdateFileForm() {
 
-
         if (!_.isEmpty(this.file_name) && !_.isEmpty(this.file_tag)) {
           this.shareFiles()
         } else {
@@ -800,6 +846,7 @@
         }
 
       },
+
 
       validateUploadFileForm() {
 
@@ -841,7 +888,7 @@
 
             this.toggleUploadFileModal()
             this.getMyFiles()
-            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Word successfully upload..'))
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'File successfully upload..'))
             this.fileUploadFileName = ''
             this.file_name = ''
             this.file_tag = ''
@@ -938,7 +985,89 @@
 
         this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Path copy to clipboard..'))
 
-      }
+      },
+
+
+
+      urlToBase64(fileUrlSrc, originalFileName) {
+        const config = {
+          method: 'GET',
+          url: fileUrlSrc,
+          responseType: 'arraybuffer'
+        }
+
+        axios(config)
+          .then(res => {
+
+            let image = btoa(
+              new Uint8Array(res.data)
+              .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            );
+
+            let base64 = `data:${res.headers['content-type'].toLowerCase()};base64,${image}`
+
+            let fileFromB64 = this.base64toFile(base64, originalFileName)
+
+            return this.putFileToForm(fileFromB64, originalFileName)
+
+          })
+          .catch(err => {
+            alert(err)
+          })
+
+      },
+
+      base64toFile(base64, filename) {
+        let arr = base64.split(','),
+          mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]),
+          n = bstr.length,
+          u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n)
+        }
+        return new File([u8arr], filename, {
+          type: mime
+        })
+      },
+
+      putFileToForm(file, filename) {
+        let formData = new FormData() //new FormData(formNameHere)
+
+        //add <input type='file' value =''  name='file'  >
+        formData.append('file', file, filename)
+
+        // check the value of formData
+        // for (var pair of formData.entries()) {
+        //   console.log(pair[0] + ', ' + pair[1]);
+        // }
+
+        const config = {
+          method: 'POST',
+          url: this.fileDuplicateUrl,
+          data: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${this.$store.state.user_details.token}`,
+          }
+        }
+
+        axios(config)
+          .then(res => {
+
+            this.getMyFiles()
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'File successfully duplicated..'))
+            this.toggleLoader()
+          })
+
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+          })
+
+        // return formData
+
+      },
 
 
     }

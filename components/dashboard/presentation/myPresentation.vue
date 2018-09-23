@@ -888,7 +888,7 @@
 
             this.toggleUploadFileModal()
             this.getMyFiles()
-            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully upload..'))
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'File successfully upload..'))
             this.fileUploadFileName = ''
             this.file_name = ''
             this.file_tag = ''
@@ -1056,7 +1056,7 @@
           .then(res => {
 
             this.getMyFiles()
-            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'Image successfully duplicated..'))
+            this.$notify(this.showNotif('success', 'Success', 'fa-check-circle', 'File successfully duplicated..'))
             this.toggleLoader()
           })
 
