@@ -117,8 +117,8 @@
                   {{users.name.first_name}} {{users.name.middle_name}} {{users.name.last_name}}
                 </td>
                 <td class="subtitle is-7">{{users.username}}</td>
-                <td class="subtitle is-7">{{users.department}}</td>
-                <td class="subtitle is-7">{{users.position}}</td>
+                <td v-if="isDepartmentLoaded" class="subtitle is-7">{{getDepartmentById (users.department)}}</td>
+                <td v-if="isPositionLoaded" class="subtitle is-7">{{ getPositionById( users.position)}}</td>
               </tr>
 
 
@@ -389,6 +389,8 @@
       this.getListOfUsers()
       this.getMyFiles()
       this.getFileTags()
+        this.getPositionList()
+      this.getDepartmentList()
     },
 
     components: {
@@ -433,7 +435,8 @@
         userList: [],
         recipientListIds: [],
         fileTagOption: [],
-
+departmentList: [],
+positionList:[]
 
       } //return
     }, //data
@@ -448,6 +451,15 @@ filters: {
     },
 
     computed: {
+ 
+      isDepartmentLoaded() {
+        return this.departmentList.length;
+      },
+
+      isPositionLoaded() {
+        return this.positionList.length;
+      },
+
       chunkedUserFileData() {
         return _.chunk(this.filteredFileList, 4)
       },
@@ -500,7 +512,60 @@ filters: {
 
     methods: {
 
+      getDepartmentById(id) {
 
+        let department = this.departmentList.find(x => x._id === id)
+
+        if (_.isNil(department)) {
+          return "NA"
+        }
+        return `${department.department}`
+      },
+
+      getPositionById(id) {
+
+        let position = this.positionList.find(x => x._id === id)
+
+        if (_.isNil(position)) {
+          return "NA"
+        }
+        return `${position.position}`
+      },
+
+
+      getPositionList() {
+
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/positions`
+        }
+
+
+        axios(config)
+          .then(res => {
+            this.positionList = res.data
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+          })
+      },
+
+      getDepartmentList() {
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/departments`
+        }
+
+        axios(config)
+          .then(res => {
+            this.departmentList = res.data
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
+          })
+      },
       getFileTagNameById(id) {
 
         let fileTag = this.fileTagOption.find(x => x._id === id)
@@ -634,7 +699,7 @@ filters: {
         axios(config)
           .then(res => {
             this.toggleLoader()
-            this.userList = res.data
+            this.userList = res.data.docs
             this.userList.filter(x => x._id === this.$store.state.user_details.user.department).inde
             let indexOfUser = this.userList.findIndex(x => x._id === this.$store.state.user_details.user._id)
             this.userList.splice(indexOfUser, 1)

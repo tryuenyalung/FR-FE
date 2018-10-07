@@ -12,6 +12,7 @@
 </template>
 
 <script>
+  import _ from 'lodash'
   import TinyMce from '@tinymce/tinymce-vue'
   import axios from 'axios'
   import keys from '~/components/keys.js'
@@ -42,31 +43,14 @@
     },
 
     mounted() {
-      const id = this.$route.query.id
 
 
 
-      const config = {
-        method: 'GET',
-        url: `${keys.BASE_URL}/api/v1/efiles/${id}`,
-        headers: {
-          "Authorization": `Bearer ${this.$store.state.user_details.token}`
-        }
-      }
+      this.getPositionList()
 
-      if (id === undefined | id === null) {
-        this.$router.push('/dashboard/efile/view/idParameterNeeded')
-      } else {
-        axios(config)
-          .then(res => {
-            this.content = this.renderContent(res.data)
-            setTimeout(() => this.toggleLoader(), 3000)
-          })
-          .catch(err => {
-            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err.response.data.errors))
-            this.toggleLoader()
-          })
-      }
+
+
+
 
     },
 
@@ -82,11 +66,62 @@
 
         tinymce: {}, //tinymce
 
-
+        positionList: []
       } //return
     },
 
     methods: {
+
+      getPositionById(id) {
+        console.log(this.positionList)
+        let position = this.positionList.find(x => x._id === id)
+
+        if (_.isNil(position)) {
+          return "NA"
+        }
+        return `${position.position}`
+      },
+
+      getPositionList() {
+
+        const config = {
+          method: 'GET',
+          url: `${keys.BASE_URL}/api/v1/positions`
+        }
+
+
+        axios(config)
+          .then(res => {
+            this.positionList = res.data
+            const id = this.$route.query.id
+            const config = {
+              method: 'GET',
+              url: `${keys.BASE_URL}/api/v1/efiles/${id}`,
+              headers: {
+                "Authorization": `Bearer ${this.$store.state.user_details.token}`
+              }
+            }
+
+            if (id === undefined | id === null) {
+              this.$router.push('/dashboard/efile/view/idParameterNeeded')
+            } else {
+              axios(config)
+                .then(res => {
+                  this.content = this.renderContent(res.data)
+                  setTimeout(() => this.toggleLoader(), 3000)
+                })
+                .catch(err => {
+                  this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err))
+                  this.toggleLoader()
+                })
+            }
+
+          })
+          .catch(err => {
+            this.toggleLoader()
+            this.$notify(this.showNotif('error', 'Server Warning', 'fa-exclamation-triangle', err))
+          })
+      },
 
       renderContent(efileData) {
         let efile = efileData
@@ -98,7 +133,7 @@
           signatures +=
             `<span>
                                         <div style='display:inline-block !important; text-align:center !important; padding-left:6px !important; padding-right:6px !important;'>
-                                            <img src='${this.API_SIGNATURE}${x.signature}' width='150'> <br> ${x.name} <br>${x.position}
+                                            <img src='${this.API_SIGNATURE}${x.signature}' width='150'> <br> ${x.name} <br>${this.getPositionById(x.position)}
                                         </div>
                                     <span>`
 

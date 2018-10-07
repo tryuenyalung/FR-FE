@@ -31,6 +31,7 @@
         <thead>
           <tr class="has-text-centered">
             <th>Efile Name</th>
+            <th>Efile Category</th>
             <th>Sender</th>
             <th>Recipients</th>
             <th>Date Created</th>
@@ -41,6 +42,7 @@
         <tbody>
           <tr v-for="efile in privateEfileList.docs" :key="efile._id">
             <td>{{efile.name}}</td>
+            <td>{{efile.file_tag}}</td>
             <td>{{efile.sender.name}}</td>
 
 

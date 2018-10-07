@@ -6,7 +6,12 @@
 
         <p class="navbar-item">
           <!-- <img src="~/assets/images/logo.png" alt="dashboard logo" width="120" height="200"> -->
-          <img src="~/assets/images/logo.png" alt="dashboard logo" width="40" height="200">
+          <img src="~/assets/images/logo.png" alt="dashboard logo" width="40" height="200"> &nbsp;&nbsp;&nbsp;
+          <span>
+            San Matias National High School
+            <br>
+            San Matias, Santo Tomas Pampanga
+          </span>
         </p>
 
         <div @click="toggleNavbarMenu" role="button" class="navbar-burger">

@@ -32,7 +32,7 @@
                     <div class="column">
                       <p for="label">Username</p>
                       <input name="username" v-model="username" class="input" data-vv-as="username" :class="{ 'is-danger': errors.has('username') }"
-                        v-validate="'required|email'" type="text" placeholder="Username">
+                        v-validate="'required'" type="text" placeholder="Username">
                       <small class="has-text-danger">{{ errors.first('username') }}</small>
                     </div>
 
@@ -257,7 +257,7 @@
         },
 
         warningMsgs: {
-          type: 'warn',
+          type: 'warn', 
           group: 'warning',
           title: `<span ><span class='fas fa-exclamation-triangle fa-2x'></span><span class='title is-5'> Warning:</span></span>`,
           text: `<p class='subtitle is-5'>asdasd</p>`

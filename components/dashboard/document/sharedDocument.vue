@@ -283,7 +283,7 @@
         axios(config)
           .then(res => {
             this.toggleLoader()
-            this.userList = res.data
+            this.userList = res.data.docs
             this.userList.filter(x => x._id === this.$store.state.user_details.user.department).inde
             let indexOfUser = this.userList.findIndex(x => x._id === this.$store.state.user_details.user._id)
             this.userList.splice(indexOfUser, 1)

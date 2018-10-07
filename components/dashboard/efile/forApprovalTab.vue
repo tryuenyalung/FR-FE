@@ -126,11 +126,12 @@
             <thead>
                 <tr  class="has-text-centered">
                     <th>Efile Name</th>
+                    <th>Efile Category</th>
                     <th>Sender</th>
                     <th>Recipients</th>
                     <th>Pending for Approval</th>
                     <th>Approved Recipients</th>
-                    <th>Private Doc</th>
+                    <th>Efile Status</th>
                     <th>Date Created</th>
                     <th class="has-text-centered" colspan="3">Action</th>
                 </tr>
@@ -139,6 +140,7 @@
             <tbody>
                 <tr  v-for="efile in pendingEfileList.docs" :key="efile._id" >
                     <td>{{efile.name}}</td>
+                    <td>{{efile.file_tag}}</td>
                     <td>{{efile.sender.name}}</td>
 
                         
